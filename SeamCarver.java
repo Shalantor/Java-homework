@@ -1,4 +1,5 @@
 /*Class that implements the Seam Carving algorithm*/
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.net.*;
@@ -54,17 +55,17 @@ public class SeamCarver{
         /*TODO:remove printStackTrace statements after testing*/
 
         try{
-             inputLink = new URL(args[0]);
-             try{
-                 test = new SeamCarver(inputLink);
-             }
-             catch(IOException e){
-                 e.printStackTrace();
-             }
+            inputLink = new URL(args[0]);
+            try{
+                test = new SeamCarver(inputLink);
+            }
+            catch(IOException e){
+                e.printStackTrace();
+            }
          }
-         catch(MalformedURLException e){
-             e.printStackTrace();
-         }
+        catch(MalformedURLException e){
+            e.printStackTrace();
+        }
 
          /*Then try to open an existing image*/
 
