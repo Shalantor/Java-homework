@@ -2,6 +2,7 @@
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.awt.*;
 import java.net.*;
 import java.io.*;
 import java.lang.*;
@@ -11,6 +12,8 @@ public class SeamCarver{
 
     /*the image to be processed*/
     private BufferedImage inputImage;
+    private BufferedImage resizedImage;
+    private Graphics2D graphics;
 
     /*primary Constructor, which will also be used be the other 2
     It also throws an IOException because it maybe was called from one
@@ -37,6 +40,17 @@ public class SeamCarver{
         this(ImageIO.read(link));
     }
 
+    /*TODO:change to private after testing*/
+    /*Method to scale image before applying Seam carve algorithm*/
+    public void scale(int width,int height){
+        resizedImage = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
+        graphics = resizedImage.createGraphics();
+        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics.drawImage(inputImage,0,0,width,height,null);
+        graphics.dispose();
+        System.out.println("New Height:" + resizedImage.getHeight() + " New Width:" + resizedImage.getWidth());
+    }
+
 
 
 
@@ -45,13 +59,13 @@ public class SeamCarver{
     /*Main method*/
     public static void main(String[] args){
 
-        SeamCarver seam;
+        SeamCarver seam = null;
         URL inputLink = null;           //case we get a link
         File inputFile = null;          //case we get a path to a file
         String path = null;
         Scanner input = new Scanner(System.in);
-        int newWidth;
-        int newHeight;
+        int newWidth = 0;
+        int newHeight = 0;
         String destinationFile;
 
         /*TODO:It is stated in the excercise what we have ask user
@@ -112,6 +126,8 @@ public class SeamCarver{
             System.out.println("This is not a valid integer");
             System.exit(0);
         }
+
+        seam.scale(newWidth,newHeight);
 
         /*ask for name of file to store the results of calculation*/
         System.out.print("Please enter the name of destination file (must be a .png file):");
