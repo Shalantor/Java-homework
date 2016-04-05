@@ -46,8 +46,9 @@ public class SeamCarver{
         resizedImage = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
         graphics = resizedImage.createGraphics();
         graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        graphics.drawImage(inputImage,0,0,width,height,null);
+        graphics.drawImage(inputImage,0,0,width,height,null);       //0,0--->x,y coordinate,null -->ImageObserver
         graphics.dispose();
+        /*NOTE:Next line is just for testing if resize worked, remove after testing*/
         System.out.println("New Height:" + resizedImage.getHeight() + " New Width:" + resizedImage.getWidth());
     }
 
@@ -127,8 +128,10 @@ public class SeamCarver{
             System.exit(0);
         }
 
+        /*NOTE: Just for testing purposes, remove after successfull testing*/
         seam.scale(newWidth,newHeight);
 
+        /*TODO:Ask about point 4 of main method in assignment*/
         /*ask for name of file to store the results of calculation*/
         System.out.print("Please enter the name of destination file (must be a .png file):");
         destinationFile = input.nextLine();
