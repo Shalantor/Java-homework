@@ -75,19 +75,16 @@ public class SeamCarver{
                 System.out.println("Couldn't open picture from given link");
             }
          }
-        catch(MalformedURLException e){
-            System.out.println("Url is malformed");
+        catch(MalformedURLException e){         //if url is malformed, try to interpret
+            inputFile = new File(path);         //input as a path to a local file
+            try{
+                test = new SeamCarver(inputFile);
+            }
+            catch(IOException ex){
+                System.out.println("Couldn't open given file or URL is malformed");
+            }
         }
 
-         /*Then try to open an existing image*/
-
-        inputFile = new File(path);
-        try{
-            test = new SeamCarver(inputFile);
-        }
-        catch(IOException e){
-            System.out.println("Couldn't open given file");
-        }
 
 
 
