@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.net.*;
 import java.io.*;
 import java.lang.*;
+import java.util.Scanner;
 
 public class SeamCarver{
 
@@ -45,36 +46,47 @@ public class SeamCarver{
     public static void main(String[] args){
 
         SeamCarver test;
-        URL inputLink = null;
-        File inputFile = null;
+        URL inputLink = null;           //case we get a link
+        File inputFile = null;          //case we get a path to a file
+        String path = null;
+        Scanner input = new Scanner(System.in);
 
-        /*Frist try to open image from a link*/
-        /*TODO:It is stated in the excercise what we have to keep asking user
-        for a valid input until he does so, for testing purposes we just exit
-        for now*/
-        /*TODO:remove printStackTrace statements after testing*/
+        /*TODO:It is stated in the excercise what we have ask user
+        for a valid input if he doesn't enter one when starting the programm*/
 
+        /*check if user has given command line arguments*/
+
+        if(args.length == 0){
+            System.out.println("Please enter a valid path to an existing image");
+            System.out.println("or enter a valid url");
+            path = input.nextLine();
+        }
+        else{
+            path = args[0];
+        }
+
+        /*First try to open image from a link*/
         try{
-            inputLink = new URL(args[0]);
+            inputLink = new URL(path);
             try{
                 test = new SeamCarver(inputLink);
             }
             catch(IOException e){
-                e.printStackTrace();
+                System.out.println("Couldn't open picture from given link");
             }
          }
         catch(MalformedURLException e){
-            e.printStackTrace();
+            System.out.println("Url is malformed");
         }
 
          /*Then try to open an existing image*/
 
-        inputFile = new File(args[0]);
+        inputFile = new File(path);
         try{
             test = new SeamCarver(inputFile);
         }
         catch(IOException e){
-            e.printStackTrace();
+            System.out.println("Couldn't open given file");
         }
 
 
