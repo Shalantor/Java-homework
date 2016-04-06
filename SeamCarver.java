@@ -48,6 +48,7 @@ public class SeamCarver{
         graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         graphics.drawImage(inputImage,0,0,width,height,null);       //0,0--->x,y coordinate,null -->ImageObserver
         graphics.dispose();
+
         /*NOTE:Next line is just for testing if resize worked, remove after testing*/
         System.out.println("New Height:" + resizedImage.getHeight() + " New Width:" + resizedImage.getWidth());
     }
@@ -67,10 +68,8 @@ public class SeamCarver{
         Scanner input = new Scanner(System.in);
         int newWidth = 0;
         int newHeight = 0;
-        String destinationFile;
-
-        /*TODO:It is stated in the excercise what we have ask user
-        for a valid input if he doesn't enter one when starting the programm*/
+        String destinationPath;
+        File destinationFile;
 
         /*check if user has given command line arguments*/
 
@@ -131,10 +130,16 @@ public class SeamCarver{
         /*NOTE: Just for testing purposes, remove after successfull testing*/
         seam.scale(newWidth,newHeight);
 
-        /*TODO:Ask about point 4 of main method in assignment*/
-        /*ask for name of file to store the results of calculation*/
+        /*If file with the same name as detinationFile exists print an error message
+        end exit the programm*/
         System.out.print("Please enter the name of destination file (must be a .png file):");
-        destinationFile = input.nextLine();
+        destinationPath = input.nextLine();
+        destinationFile = new File(destinationPath);
+
+        if(destinationFile.isFile()){
+            System.out.println("File already exists");
+            System.exit(0);
+        }
 
     }
 }
