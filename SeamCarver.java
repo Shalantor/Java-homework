@@ -40,6 +40,14 @@ public class SeamCarver{
         this(ImageIO.read(link));
     }
 
+
+    /*Method for calculating the energy of a pixel*/
+    /*public double energy(int row,int col){
+
+
+
+    }*/
+
     /*TODO:change to private after testing*/
     /*Method to scale image before applying Seam carve algorithm*/
     public void scale(int width,int height){
@@ -55,26 +63,28 @@ public class SeamCarver{
         System.out.println("New Height:" + resizedImage.getHeight() + " New Width:" + resizedImage.getWidth());
     }
 
+
     /*Method for applying Seam Carve algorithm onto picture*/
     public void seamCarve(int width,int height){
 
         /*Variables used for scaling*/
         int scaleFactor = 1;
         int scaleWidth = inputImage.getWidth();
-        int scaleHeight = inputImage.getWidth();
+        int scaleHeight = inputImage.getHeight();
+        int inputWidth = scaleWidth;
+        int inputHeight = scaleHeight;
 
         /*Calculating optimal scale dimensions*/
         /*TODO:look if there is a better way to to this*/
-        while( scaleWidth > width && scaleHeight > height ){
+        while( ( inputWidth/scaleFactor >= width ) && ( inputHeight/scaleFactor >= height ) ){
+            scaleWidth = inputWidth / scaleFactor;
+            scaleHeight = inputHeight / scaleFactor;
             scaleFactor += 1;
-            scaleWidth = inputImage.getWidth() / scaleFactor;
-            scaleHeight = inputImage.getHeight() / scaleFactor;
         }
 
-        scaleFactor -= 1;
         this.scale(scaleWidth,scaleHeight);
 
-        
+
 
 
     }
