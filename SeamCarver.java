@@ -42,11 +42,47 @@ public class SeamCarver{
 
 
     /*Method for calculating the energy of a pixel*/
-    /*public double energy(int row,int col){
+    public double energy(int row,int col){
 
+        /*TODO:check if energy variable is necessary or if just better to
+        calculate on the go*/
+        /*Energy on X and Y axis respectfully*/
+        double energyX;
+        double energyY;
+        double energy;
 
+        /*In case we get out of bounds because of a negative index*/
+        /*TODO:Check for a better way of doing this*/
+        int adjustedCol = col - 1;
+        int adjustedRow = row - 1;
 
-    }*/
+        if(adjustedRow < 0){
+            adjustedRow = resizedImage.getHeight() - 1;
+        }
+
+        if(adjustedCol < 0){
+            adjustedCol = resizedImage.getWidth() - 1;
+        }
+
+        /*Colors of surrounding pixels*/
+        Color left = new Color(resizedImage.getRGB(row,adjustedCol));
+        Color right = new Color(resizedImage.getRGB(row , (col+1) % resizedImage.getWidth() ));
+        Color top = new Color(resizedImage.getRGB(adjustedRow,col));
+        Color bottom = new Color(resizedImage.getRGB( (row+1) % resizedImage.getHeight() ,col));
+
+        /*Calculating energy*/
+        energyX = Math.pow( left.getRed() - right.getRed() , 2 ) + Math.pow( left.getGreen() - right.getGreen() , 2 )
+                    + Math.pow( left.getBlue() - right.getBlue() , 2 );
+
+        energyY = Math.pow( top.getRed() - bottom.getRed() , 2 ) + Math.pow( top.getGreen() - bottom.getGreen() , 2 )
+                    + Math.pow( top.getBlue() - bottom.getBlue() , 2 );
+
+        energy = energyY + energyX ;
+
+        return energy;
+
+    }
+
 
     /*TODO:change to private after testing*/
     /*Method to scale image before applying Seam carve algorithm*/
