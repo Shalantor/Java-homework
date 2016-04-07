@@ -43,6 +43,8 @@ public class SeamCarver{
     /*TODO:change to private after testing*/
     /*Method to scale image before applying Seam carve algorithm*/
     public void scale(int width,int height){
+
+        /*Setting up what we need for scaling*/
         resizedImage = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
         graphics = resizedImage.createGraphics();
         graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -51,6 +53,30 @@ public class SeamCarver{
 
         /*NOTE:Next line is just for testing if resize worked, remove after testing*/
         System.out.println("New Height:" + resizedImage.getHeight() + " New Width:" + resizedImage.getWidth());
+    }
+
+    /*Method for applying Seam Carve algorithm onto picture*/
+    public void seamCarve(int width,int height){
+
+        /*Variables used for scaling*/
+        int scaleFactor = 1;
+        int scaleWidth = inputImage.getWidth();
+        int scaleHeight = inputImage.getWidth();
+
+        /*Calculating optimal scale dimensions*/
+        /*TODO:look if there is a better way to to this*/
+        while( scaleWidth > width && scaleHeight > height ){
+            scaleFactor += 1;
+            scaleWidth = inputImage.getWidth() / scaleFactor;
+            scaleHeight = inputImage.getHeight() / scaleFactor;
+        }
+
+        scaleFactor -= 1;
+        this.scale(scaleWidth,scaleHeight);
+
+        
+
+
     }
 
 
@@ -128,7 +154,7 @@ public class SeamCarver{
         }
 
         /*NOTE: Just for testing purposes, remove after successfull testing*/
-        seam.scale(newWidth,newHeight);
+        seam.seamCarve(newWidth,newHeight);
 
         /*If file with the same name as detinationFile exists print an error message
         end exit the programm*/
