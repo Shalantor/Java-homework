@@ -12,7 +12,6 @@ public class SeamCarver{
 
     /*the image to be processed*/
     private BufferedImage inputImage;
-    private BufferedImage resizedImage;
     private Graphics2D graphics;
 
     /*primary Constructor, which will also be used be the other 2
@@ -57,18 +56,18 @@ public class SeamCarver{
         int adjustedRow = row - 1;
 
         if(adjustedRow < 0){
-            adjustedRow = resizedImage.getHeight() - 1;
+            adjustedRow = inputImage.getHeight() - 1;
         }
 
         if(adjustedCol < 0){
-            adjustedCol = resizedImage.getWidth() - 1;
+            adjustedCol = inputImage.getWidth() - 1;
         }
 
         /*Colors of surrounding pixels*/
-        Color left = new Color(resizedImage.getRGB(row,adjustedCol));
-        Color right = new Color(resizedImage.getRGB(row , (col+1) % resizedImage.getWidth() ));
-        Color top = new Color(resizedImage.getRGB(adjustedRow,col));
-        Color bottom = new Color(resizedImage.getRGB( (row+1) % resizedImage.getHeight() ,col));
+        Color left = new Color(inputImage.getRGB(row,adjustedCol));
+        Color right = new Color(inputImage.getRGB(row , (col+1) % inputImage.getWidth() ));
+        Color top = new Color(inputImage.getRGB(adjustedRow,col));
+        Color bottom = new Color(inputImage.getRGB( (row+1) % inputImage.getHeight() ,col));
 
         /*Calculating energy*/
         energyX = Math.pow( left.getRed() - right.getRed() , 2 ) + Math.pow( left.getGreen() - right.getGreen() , 2 )
@@ -89,7 +88,7 @@ public class SeamCarver{
     public void scale(int width,int height){
 
         /*Setting up what we need for scaling*/
-        resizedImage = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
+        BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
         graphics = resizedImage.createGraphics();
         graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         graphics.drawImage(inputImage,0,0,width,height,null);       //0,0--->x,y coordinate,null -->ImageObserver
@@ -97,6 +96,7 @@ public class SeamCarver{
 
         /*NOTE:Next line is just for testing if resize worked, remove after testing*/
         System.out.println("New Height:" + resizedImage.getHeight() + " New Width:" + resizedImage.getWidth());
+        inputImage = resizedImage;
     }
 
 
