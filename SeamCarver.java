@@ -23,7 +23,7 @@ public class SeamCarver{
         inputImage = image;
 
         /*TODO:Remove line below this one after testing that it works*/
-        System.out.println("Height:" + inputImage.getHeight() + "Width:" + inputImage.getWidth());
+        System.out.println("Height:" + inputImage.getHeight() + " Width:" + inputImage.getWidth());
 
     }
 
@@ -41,6 +41,7 @@ public class SeamCarver{
 
 
     /*Method for calculating the energy of a pixel*/
+    /*NOTE: correct syntex is Color(column,row)*/
     public double energy(int row,int col){
 
         /*TODO:check if energy variable is necessary or if just better to
@@ -64,10 +65,12 @@ public class SeamCarver{
         }
 
         /*Colors of surrounding pixels*/
-        Color left = new Color(inputImage.getRGB(row,adjustedCol));
-        Color right = new Color(inputImage.getRGB(row , (col+1) % inputImage.getWidth() ));
-        Color top = new Color(inputImage.getRGB(adjustedRow,col));
-        Color bottom = new Color(inputImage.getRGB( (row+1) % inputImage.getHeight() ,col));
+        /*NOTE:print is only for testing, remove when finished*/
+        //System.out.println("adjustedRow: " + adjustedRow + "adjustedCol: " + adjustedCol);
+        Color left = new Color(inputImage.getRGB( adjustedCol , row ));
+        Color right = new Color(inputImage.getRGB( (col+1) % inputImage.getWidth() , row ));
+        Color top = new Color(inputImage.getRGB( col , adjustedRow));
+        Color bottom = new Color(inputImage.getRGB( col , (row+1) % inputImage.getHeight() ));
 
         /*Calculating energy*/
         energyX = Math.pow( left.getRed() - right.getRed() , 2 ) + Math.pow( left.getGreen() - right.getGreen() , 2 )
@@ -84,8 +87,10 @@ public class SeamCarver{
 
 
     /*TODO:change to private after testing*/
-    /*Method to scale image before applying Seam carve algorithm*/
+    /*Method to scale image before applying Seam carve algorithm
+    width, height = dimensions of image after scaling*/
     public void scale(int width,int height){
+
 
         /*Setting up what we need for scaling*/
         BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
@@ -100,25 +105,42 @@ public class SeamCarver{
     }
 
 
-    /*Method for applying Seam Carve algorithm onto picture*/
+    /*Method for applying Seam Carve algorithm onto picture
+    width, height = dimensions of the image we want to get after applying the seamCarve algorithm*/
     public void seamCarve(int width,int height){
 
-        /*Variables used for scaling*/
-        int scaleFactor = 1;
-        int scaleWidth = inputImage.getWidth();
-        int scaleHeight = inputImage.getHeight();
-        int inputWidth = scaleWidth;
-        int inputHeight = scaleHeight;
+        /*First get ratio of width/height, because we have to choose in which dimension
+        to scale*/
+        float ratio = (float)inputImage.getWidth() / inputImage.getHeight() ;
 
-        /*Calculating optimal scale dimensions*/
-        /*TODO:look if there is a better way to to this*/
-        while( ( inputWidth/scaleFactor >= width ) && ( inputHeight/scaleFactor >= height ) ){
-            scaleWidth = inputWidth / scaleFactor;
-            scaleHeight = inputHeight / scaleFactor;
-            scaleFactor += 1;
+        /*Then calculate the respective width and height we would get for each choice*/
+        int scaledWidth = Math.round(height * ratio) ;
+        int scaledHeight = Math.round(width / ratio) ;
+
+        System.out.println("ScaledHeight is " + scaledHeight + " and scaledWidth is " + scaledWidth);
+
+        /*First check if scaling to one Dimension doesnt make the other one
+        smaller than the result of seamcarve algorithm dimensions,
+        then if that doesn't happen with any dimension choose the one that will
+        need less iterations to complete, by choosing the smallest difference*/
+        /*TODO: check if Math.ceil() has better results because for example Math.round(3.1) gives 3*/
+        if(scaledWidth - width < 0){
+            scaledWidth = width;
+        }
+        else if(scaledHeight - height < 0){
+            scaledHeight = height;
+        }
+        else if(scaledWidth - width <= scaledHeight - height){
+            scaledHeight = height;
+        }
+        else{
+            scaledWidth = width;
         }
 
-        this.scale(scaleWidth,scaleHeight);
+        /*Scale image*/
+
+        this.scale(scaledWidth,scaledHeight);
+
 
 
 
@@ -204,7 +226,7 @@ public class SeamCarver{
 
         /*If file with the same name as detinationFile exists print an error message
         end exit the programm*/
-        System.out.print("Please enter the name of destination file (must be a .png file):");
+        System.out.print("Please enter the name of destination file (this has no effect):");
         destinationPath = input.nextLine();
         destinationFile = new File(destinationPath);
 
