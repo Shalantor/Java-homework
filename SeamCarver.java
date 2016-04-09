@@ -1,7 +1,7 @@
 /*Class that implements the Seam Carving algorithm*/
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
+import java.awt.image.*;
 import java.awt.*;
 import java.net.*;
 import java.io.*;
@@ -102,6 +102,44 @@ public class SeamCarver{
         /*NOTE:Next line is just for testing if resize worked, remove after testing*/
         System.out.println("New Height:" + resizedImage.getHeight() + " New Width:" + resizedImage.getWidth());
         inputImage = resizedImage;
+    }
+
+
+    /*Method to remove vertical seam from picture*/
+    public void removeVerticalSeam(int[] seam){
+
+        //create the new image
+        BufferedImage newImage = new BufferedImage(inputImage.getWidth() - 1,
+                                inputImage.getHeight() , inputImage.getType());
+
+        WritableRaster newImageRaster = newImage.getRaster() ;
+
+        //get Data of original image
+        Raster data = inputImage.getData();
+
+        //garbage array TODO:check use of garbage array
+        float[] garbArray = new float[inputImage.getWidth() * 3];
+
+        //copy one row at a time
+        for(int row = 0; row < seam.length; row ++){
+            int column = seam[row];
+
+            if(column > 0){                             //remove pixels from the left side of seam
+                newImageRaster.setPixels(0,row,column,1,
+                                        data.getPixels(0, row, column, 1, garbArray));
+            }
+
+            if(seam[row] < inputImage.getWidth() - 1){  //remove pixels from the right side of seam
+                int widthAfter = newImage.getWidth() - column;
+                newImageRaster.setPixels(column, row, widthAfter, 1,
+                                        data.getPixels(column + 1, row, widthAfter, 1, garbArray));
+            }
+
+        }
+
+        inputImage = newImage;
+
+        System.out.println("ImageWIdth after crop: " + inputImage.getWidth());
     }
 
 
@@ -378,7 +416,8 @@ public class SeamCarver{
         //System.out.println("length of energyTable:" + energyTable.length);
         //System.out.println("And length of each of its elements: " + energyTable[0].length);
 
-        test = seam.findHorizontalSeam();
+        test = seam.findVerticalSeam();
+        seam.removeVerticalSeam(test);
 
         //PRINTS olny for testing
         System.out.println("VERTICALSEAM");
