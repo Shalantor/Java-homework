@@ -13,6 +13,8 @@ public class SeamCarver{
     /*the image to be processed*/
     private BufferedImage inputImage;
     private Graphics2D graphics;
+    private static double [][] energyTable;
+    private int[] seam; //seam with min sum which includes numbers of chosen columns
 
     /*primary Constructor, which will also be used be the other 2
     It also throws an IOException because it maybe was called from one
@@ -147,10 +149,97 @@ public class SeamCarver{
 
     }
 
+    //method creates or updates energyTable by using energy()
+    public void createEnergyTable(){
 
+        int width, height;
 
+        width = inputImage.getWidth(); //updated value of newWidth
+        height = inputImage.getHeight(); //updated value of newHeight
 
+        energyTable = new double[width][height];
 
+        for (int i=0; i < height; i++){
+            for (int j=0; j<width; j++){
+                energyTable[i][j] = energy(j,i);
+            }
+        }
+
+        /*NOTE:print is only for testing, remove when finished*/
+        for (int i=0; i<inputImage.getHeight(); i++){
+            System.out.println(Arrays.toString(energyTable[i]));
+        }
+    }
+/*
+    //Den leitourgei swsta. 8elw na koitajw ton algori8mo pali
+    //method finds vertical seam. Returns seamTable which includes column numbers of image. /* ypologizei rafh tou prwtou
+    public int[] findVerticalSeam(){
+        double a,b,c;
+        int[] tempSeam; //temp to copy to seam
+        double sum=0, tempSum; //sum of the energy of seam table and tempSeam table respectively
+        double min;
+        int width;
+        int height;
+        int column; //the chosen column of three below
+
+        width = inputImage.getWidth(); //updated value of newWidth
+        height = inputImage.getHeight(); //updated value of newHeight
+        seam = new int[height];
+        tempSeam = new int[height];
+
+        for (int j=0;j<width; j++){ //columns
+            tempSum = energyTable[0][j];
+            tempSeam[0]=j;
+            for (int i=0; i<height-1; i++){ //rows
+                if (j==width-1 || j==0){  //All special cases (external pixels)
+                    a = energyTable[i+1][(j-1+width)%width]; // '%' for circle. +width for negative cases.
+                    b = energyTable[i+1][j];
+                    c = energyTable[i+1][(j+1)%width]; // '%' for circle
+                    min = Math.min(Math.min(a,b),c);
+                    if (min==a){
+                        column = (j-1+width)%width;
+                    }
+                    else if(min==b){
+                        column = j;
+                    }
+                    else{
+                        column = (j+1)%width;
+                    }
+                }
+                else{ //general case (internal pixels)
+                    a = energyTable[i+1][j-1];
+                    b = energyTable[i+1][j];
+                    c = energyTable[i+1][j+1];
+                    min = Math.min(Math.min(a,b),c);
+                    if (min==a){
+                        column = j-1;
+                    }
+                    else if(min==b){
+                        column = j;
+                    }
+                    else{
+                        column = j+1;
+                    }
+                }
+                tempSeam[i+1] = column;
+                tempSum= tempSum + energyTable[i+1][column];
+            }
+            if(j!=0 && sum > tempSum){
+                System.arraycopy(tempSeam,0,seam,0,tempSeam.length);
+                sum = tempSum;
+            }
+            else if(j==0){ //Special case (first column)
+                System.arraycopy(tempSeam,0,seam,0,tempSeam.length);
+                sum = tempSum;
+            }
+        }
+        //NOTE:print is only for testing, remove when finished
+        System.out.println("Seam:");
+        System.out.println(Arrays.toString(seam));
+
+        return(seam);
+    }
+*/
 
     /*Main method*/
     public static void main(String[] args){
@@ -198,6 +287,7 @@ public class SeamCarver{
             }
         }
 
+
         /*TODO:optimize WORKAROUND of nextInt() not consuming \n character*/
         /*Ask for desired dimensions of image to create*/
 
@@ -223,6 +313,10 @@ public class SeamCarver{
 
         /*NOTE: Just for testing purposes, remove after successfull testing*/
         seam.seamCarve(newWidth,newHeight);
+        seam.createEnergyTable();
+        //seam.findVerticalSeam();
+        /*NOTE:print is only for testing, remove when finished*/
+        System.out.println("length of energyTable:" + energyTable.length);
 
         /*If file with the same name as detinationFile exists print an error message
         end exit the programm*/
