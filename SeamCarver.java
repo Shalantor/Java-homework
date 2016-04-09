@@ -160,18 +160,12 @@ public class SeamCarver{
 
         //copy one row at a time
         for(int row = 0; row < seam.length; row ++){
+            
             int column = seam[row];
-            try{
-                if(column > 0){                             //copy pixels from the left side of seam
-                    newImageRaster.setPixels(0,row,column,1,
-                                            data.getPixels(0, row, column, 1, garbArray));
-                }
-            }
-            catch(ArrayIndexOutOfBoundsException e){
-                e.printStackTrace();
-                System.out.println("EXCEPTION");
-                System.out.println("|||" + row + "|||" + column);
-                System.exit(0);
+
+            if(column > 0){                             //copy pixels from the left side of seam
+                newImageRaster.setPixels(0,row,column,1,
+                                        data.getPixels(0, row, column, 1, garbArray));
             }
 
             if(seam[row] < inputImage.getWidth() - 1){  //copy pixels from the right side of seam
