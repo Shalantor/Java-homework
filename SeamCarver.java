@@ -230,6 +230,63 @@ public class SeamCarver{
         return(favoredSeam);
     }
 
+    //method finds vertical seam. Returns seamTable which includes column numbers of image.
+    public int[] findHorizontalSeam(){
+
+
+        int height = inputImage.getHeight();
+        int width = inputImage.getWidth();
+        double bottom,bottomLeft,bottomRight;                                   //energies of pixels below the one we are checking
+        int[] favoredSeam = null;
+        double favoredSeamEnergy = 0;
+        int[] checkSeam ;                                                       //current Seam that is checked
+        double checkSeamEnergy;                                                 //current sum of Seam that is checked
+        int row;
+        double minEnergy;
+
+        /*Find the seam with the lowest energy*/
+
+        for( int i = 0 ; i < height ; i++ ){                                     //iterating over ROWS
+            row = i;
+            checkSeam = new int[width];
+            checkSeam[0] = row ;                                              //add column to seam
+            checkSeamEnergy = energy (row,0);                                //add energy of that column
+
+            for ( int j = 0; j < width - 1 ; j++ ){                                //iterating over COLUMNS
+
+                /*Getting energies of pixels*/
+                bottom = energy( row , j+1 );
+                bottomRight = energy( (row + 1) % height , j+1 );
+                bottomLeft = energy( ( row -1 + height ) % height , j+1) ;
+
+                minEnergy = Math.min( Math.min( bottom , bottomLeft ) , bottomRight);
+
+                if( minEnergy == bottomRight ){                                 //if minEnergy == bottom, column stays the same
+                    row = (row + 1) % height ;
+                }
+                else if (minEnergy == bottomLeft ){
+                    row = (row - 1 + height) % height ;
+                }
+
+                checkSeam[j+1]= row;                                          //update seam
+                checkSeamEnergy += minEnergy ;                                  //update energy of seam
+
+            }
+
+            if(favoredSeamEnergy == 0 || favoredSeamEnergy > checkSeamEnergy ){ //is energy lower?
+                favoredSeam = checkSeam;
+                favoredSeamEnergy = checkSeamEnergy;
+            }
+
+        }
+
+        System.out.println("LOWEST SEAM");
+        System.out.println(favoredSeamEnergy);
+
+
+
+        return(favoredSeam);
+    }
 
     /*Main method*/
     public static void main(String[] args){
@@ -316,12 +373,12 @@ public class SeamCarver{
         /*NOTE: Just for testing purposes, remove after successfull testing*/
         seam.seamCarve(newWidth,newHeight);
 
-        /seam.createEnergyTable();
+        seam.createEnergyTable();
         /*NOTE:print is only for testing, remove when finished*/
         //System.out.println("length of energyTable:" + energyTable.length);
         //System.out.println("And length of each of its elements: " + energyTable[0].length);
 
-        test = seam.findVerticalSeam();
+        test = seam.findHorizontalSeam();
 
         //PRINTS olny for testing
         System.out.println("VERTICALSEAM");
