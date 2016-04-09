@@ -117,7 +117,7 @@ public class SeamCarver{
         Raster data = inputImage.getData();
 
         //garbage array TODO:check use of garbage array
-        float[] garbArray = new float[inputImage.getHeight() * 3];
+        float[] garbArray = new float[inputImage.getHeight() * inputImage.getWidth()];
 
         //remove horizontal seam column by column
         for( int column = 0; column < seam.length; column ++){
@@ -153,23 +153,30 @@ public class SeamCarver{
         WritableRaster newImageRaster = newImage.getRaster() ;
 
         //get Data of original image
-        Raster data = inputImage.getData();
+        final Raster data = inputImage.getData();
 
         //garbage array TODO:check use of garbage array
-        float[] garbArray = new float[inputImage.getWidth() * 3];
+        float[] garbArray = new float[inputImage.getWidth() * inputImage.getHeight()];
 
         //copy one row at a time
         for(int row = 0; row < seam.length; row ++){
             int column = seam[row];
-
-            if(column > 0){                             //copy pixels from the left side of seam
-                newImageRaster.setPixels(0,row,column,1,
-                                        data.getPixels(0, row, column, 1, garbArray));
+            try{
+                if(column > 0){                             //copy pixels from the left side of seam
+                    newImageRaster.setPixels(0,row,column,1,
+                                            data.getPixels(0, row, column, 1, garbArray));
+                }
+            }
+            catch(ArrayIndexOutOfBoundsException e){
+                e.printStackTrace();
+                System.out.println("EXCEPTION");
+                System.out.println("|||" + row + "|||" + column);
+                System.exit(0);
             }
 
             if(seam[row] < inputImage.getWidth() - 1){  //copy pixels from the right side of seam
                 int widthAfter = newImage.getWidth() - column;
-                newImageRaster.setPixels(column, row, widthAfter, 1,
+                newImageRaster.setPixels(column , row, widthAfter, 1,
                                         data.getPixels(column + 1, row, widthAfter, 1, garbArray));
             }
 
@@ -454,13 +461,13 @@ public class SeamCarver{
         //System.out.println("length of energyTable:" + energyTable.length);
         //System.out.println("And length of each of its elements: " + energyTable[0].length);
 
-        test = seam.findVerticalSeam();
+        test = seam.findHorizontalSeam();
 
         //PRINTS olny for testing
         System.out.println("SEAM");
         System.out.println(Arrays.toString(test));
 
-        seam.removeVerticalSeam(test);
+        seam.removeHorizontalSeam(test);
 
 
     }
