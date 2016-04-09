@@ -67,8 +67,6 @@ public class SeamCarver{
         }
 
         /*Colors of surrounding pixels*/
-        /*NOTE:print is only for testing, remove when finished*/
-        //System.out.println("adjustedRow: " + adjustedRow + "adjustedCol: " + adjustedCol);
         Color left = new Color(inputImage.getRGB( adjustedCol , row ));
         Color right = new Color(inputImage.getRGB( (col+1) % inputImage.getWidth() , row ));
         Color top = new Color(inputImage.getRGB( col , adjustedRow));
@@ -159,17 +157,19 @@ public class SeamCarver{
 
         energyTable = new double[width][height];
 
+        /*Iterating over pixels of image*/
         for (int i=0; i < height; i++){
             for (int j=0; j<width; j++){
-                energyTable[i][j] = energy(j,i);
+                energyTable[j][i] = energy(i,j);
             }
         }
 
         /*NOTE:print is only for testing, remove when finished*/
-        for (int i=0; i<inputImage.getHeight(); i++){
-            System.out.println(Arrays.toString(energyTable[i]));
-        }
+        //for (int i=0; i<inputImage.getHeight(); i++){
+            //System.out.println(Arrays.toString(energyTable[i]));
+        //}
     }
+
 /*
     //Den leitourgei swsta. 8elw na koitajw ton algori8mo pali
     //method finds vertical seam. Returns seamTable which includes column numbers of image. /* ypologizei rafh tou prwtou
@@ -311,13 +311,6 @@ public class SeamCarver{
             System.exit(0);
         }
 
-        /*NOTE: Just for testing purposes, remove after successfull testing*/
-        seam.seamCarve(newWidth,newHeight);
-        seam.createEnergyTable();
-        //seam.findVerticalSeam();
-        /*NOTE:print is only for testing, remove when finished*/
-        System.out.println("length of energyTable:" + energyTable.length);
-
         /*If file with the same name as detinationFile exists print an error message
         end exit the programm*/
         System.out.print("Please enter the name of destination file (this has no effect):");
@@ -328,6 +321,15 @@ public class SeamCarver{
             System.out.println("File already exists");
             System.exit(0);
         }
+
+        /*NOTE: Just for testing purposes, remove after successfull testing*/
+        seam.seamCarve(newWidth,newHeight);
+
+        seam.createEnergyTable();
+        //seam.findVerticalSeam();
+        /*NOTE:print is only for testing, remove when finished*/
+        //System.out.println("length of energyTable:" + energyTable.length);
+        //System.out.println("And length of each of its elements: " + energyTable[0].length);
 
     }
 }
