@@ -104,8 +104,46 @@ public class SeamCarver{
         inputImage = resizedImage;
     }
 
+    /*Method for removing horizontal seam from image*/
+    public void removeHorizontalSeam(int[] seam){
 
-    /*Method to remove vertical seam from picture*/
+        //create the new image
+        BufferedImage newImage = new BufferedImage(inputImage.getWidth(),
+                                inputImage.getHeight() -1 , inputImage.getType());
+
+        WritableRaster newImageRaster = newImage.getRaster() ;
+
+        //get Data of original image
+        Raster data = inputImage.getData();
+
+        //garbage array TODO:check use of garbage array
+        float[] garbArray = new float[inputImage.getHeight() * 3];
+
+        //remove horizontal seam column by column
+        for( int column = 0; column < seam.length; column ++){
+            int row = seam[column];
+
+            if(row > 0){                                //copy pixels above seam
+                newImageRaster.setPixels(column,0,1,row,
+                                        data.getPixels(column, 0 , 1 , row , garbArray));
+            }
+
+
+                if(seam[column] < inputImage.getHeight () - 1){//copy pixels under seam
+                    int heightAfter = newImage.getHeight() - row ;
+                    newImageRaster.setPixels(column , row ,  1 , heightAfter,
+                                            data.getPixels(column , row + 1, 1 , heightAfter , garbArray));
+                }
+
+
+        }
+
+        inputImage = newImage;
+
+        System.out.println("IMAGE height after crop:" + inputImage.getHeight());
+    }
+
+    /*Method for removing vertical seam from picture*/
     public void removeVerticalSeam(int[] seam){
 
         //create the new image
@@ -124,12 +162,12 @@ public class SeamCarver{
         for(int row = 0; row < seam.length; row ++){
             int column = seam[row];
 
-            if(column > 0){                             //remove pixels from the left side of seam
+            if(column > 0){                             //copy pixels from the left side of seam
                 newImageRaster.setPixels(0,row,column,1,
                                         data.getPixels(0, row, column, 1, garbArray));
             }
 
-            if(seam[row] < inputImage.getWidth() - 1){  //remove pixels from the right side of seam
+            if(seam[row] < inputImage.getWidth() - 1){  //copy pixels from the right side of seam
                 int widthAfter = newImage.getWidth() - column;
                 newImageRaster.setPixels(column, row, widthAfter, 1,
                                         data.getPixels(column + 1, row, widthAfter, 1, garbArray));
@@ -417,13 +455,13 @@ public class SeamCarver{
         //System.out.println("And length of each of its elements: " + energyTable[0].length);
 
         test = seam.findVerticalSeam();
-        seam.removeVerticalSeam(test);
 
         //PRINTS olny for testing
-        System.out.println("VERTICALSEAM");
+        System.out.println("SEAM");
         System.out.println(Arrays.toString(test));
-        System.out.println("LENGTH OF VERTICAL SEAM");
-        System.out.println(test.length);
+
+        seam.removeVerticalSeam(test);
+
 
     }
 }
