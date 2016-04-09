@@ -155,19 +155,20 @@ public class SeamCarver{
         width = inputImage.getWidth(); //updated value of newWidth
         height = inputImage.getHeight(); //updated value of newHeight
 
-        energyTable = new double[width][height];
+        energyTable = new double[height][width];
 
         /*Iterating over pixels of image*/
         for (int i=0; i < height; i++){
-            for (int j=0; j<width; j++){
-                energyTable[j][i] = energy(i,j);
+            for (int j=0; j < width; j++){
+                energyTable[i][j] = energy(i,j);
             }
         }
 
         /*NOTE:print is only for testing, remove when finished*/
-        //for (int i=0; i<inputImage.getHeight(); i++){
-            //System.out.println(Arrays.toString(energyTable[i]));
-        //}
+        System.out.println("ENERGYMAP");
+        for (int i=0; i<inputImage.getHeight(); i++){
+            System.out.println(Arrays.toString(energyTable[i]));
+        }
     }
 
 
@@ -220,6 +221,9 @@ public class SeamCarver{
             }
 
         }
+
+        System.out.println("LOWEST SEAM");
+        System.out.println(favoredSeamEnergy);
 
 
 
@@ -312,14 +316,17 @@ public class SeamCarver{
         /*NOTE: Just for testing purposes, remove after successfull testing*/
         seam.seamCarve(newWidth,newHeight);
 
-        seam.createEnergyTable();
-        //seam.findVerticalSeam();
+        /seam.createEnergyTable();
         /*NOTE:print is only for testing, remove when finished*/
         //System.out.println("length of energyTable:" + energyTable.length);
         //System.out.println("And length of each of its elements: " + energyTable[0].length);
 
         test = seam.findVerticalSeam();
+
+        //PRINTS olny for testing
+        System.out.println("VERTICALSEAM");
         System.out.println(Arrays.toString(test));
+        System.out.println("LENGTH OF VERTICAL SEAM");
         System.out.println(test.length);
 
     }
