@@ -170,76 +170,62 @@ public class SeamCarver{
         //}
     }
 
-/*
-    //Den leitourgei swsta. 8elw na koitajw ton algori8mo pali
-    //method finds vertical seam. Returns seamTable which includes column numbers of image. /* ypologizei rafh tou prwtou
+
+    //method finds vertical seam. Returns seamTable which includes column numbers of image.
     public int[] findVerticalSeam(){
-        double a,b,c;
-        int[] tempSeam; //temp to copy to seam
-        double sum=0, tempSum; //sum of the energy of seam table and tempSeam table respectively
-        double min;
-        int width;
-        int height;
-        int column; //the chosen column of three below
 
-        width = inputImage.getWidth(); //updated value of newWidth
-        height = inputImage.getHeight(); //updated value of newHeight
-        seam = new int[height];
-        tempSeam = new int[height];
 
-        for (int j=0;j<width; j++){ //columns
-            tempSum = energyTable[0][j];
-            tempSeam[0]=j;
-            for (int i=0; i<height-1; i++){ //rows
-                if (j==width-1 || j==0){  //All special cases (external pixels)
-                    a = energyTable[i+1][(j-1+width)%width]; // '%' for circle. +width for negative cases.
-                    b = energyTable[i+1][j];
-                    c = energyTable[i+1][(j+1)%width]; // '%' for circle
-                    min = Math.min(Math.min(a,b),c);
-                    if (min==a){
-                        column = (j-1+width)%width;
-                    }
-                    else if(min==b){
-                        column = j;
-                    }
-                    else{
-                        column = (j+1)%width;
-                    }
+        int height = inputImage.getHeight();
+        int width = inputImage.getWidth();
+        double bottom,bottomLeft,bottomRight;                                   //energies of pixels below the one we are checking
+        int[] favoredSeam = null;
+        double favoredSeamEnergy = 0;
+        int[] checkSeam ;                                                       //current Seam that is checked
+        double checkSeamEnergy;                                                 //current sum of Seam that is checked
+        int column;
+        double minEnergy;
+
+        /*Find the seam with the lowest energy*/
+
+        for( int i = 0 ; i < width ; i++ ){                                     //iterating over COLUMNS
+            column = i;
+            checkSeam = new int[height];
+            checkSeam[0] = column ;                                              //add column to seam
+            checkSeamEnergy = energy (0,column);                                //add energy of that column
+
+            for ( int j = 0; j < height - 1 ; j++ ){                                //iterating over ROWS
+
+                /*Getting energies of pixels*/
+                bottom = energy( j+1 , column);
+                bottomRight = energy( j+1 , (column + 1) % width );
+                bottomLeft = energy( j+1 , ( column -1 + width ) % width) ;
+
+                minEnergy = Math.min( Math.min( bottom , bottomLeft ) , bottomRight);
+
+                if( minEnergy == bottomRight ){                                 //if minEnergy == bottom, column stays the same
+                    column = (column + 1) % width ;
                 }
-                else{ //general case (internal pixels)
-                    a = energyTable[i+1][j-1];
-                    b = energyTable[i+1][j];
-                    c = energyTable[i+1][j+1];
-                    min = Math.min(Math.min(a,b),c);
-                    if (min==a){
-                        column = j-1;
-                    }
-                    else if(min==b){
-                        column = j;
-                    }
-                    else{
-                        column = j+1;
-                    }
+                else if (minEnergy == bottomLeft ){
+                    column = (column - 1 + width) % width ;
                 }
-                tempSeam[i+1] = column;
-                tempSum= tempSum + energyTable[i+1][column];
+
+                checkSeam[j+1]= column;                                          //update seam
+                checkSeamEnergy += minEnergy ;                                  //update energy of seam
+
             }
-            if(j!=0 && sum > tempSum){
-                System.arraycopy(tempSeam,0,seam,0,tempSeam.length);
-                sum = tempSum;
+
+            if(favoredSeamEnergy == 0 || favoredSeamEnergy > checkSeamEnergy ){ //is energy lower?
+                favoredSeam = checkSeam;
+                favoredSeamEnergy = checkSeamEnergy;
             }
-            else if(j==0){ //Special case (first column)
-                System.arraycopy(tempSeam,0,seam,0,tempSeam.length);
-                sum = tempSum;
-            }
+
         }
-        //NOTE:print is only for testing, remove when finished
-        System.out.println("Seam:");
-        System.out.println(Arrays.toString(seam));
 
-        return(seam);
+
+
+        return(favoredSeam);
     }
-*/
+
 
     /*Main method*/
     public static void main(String[] args){
@@ -253,6 +239,7 @@ public class SeamCarver{
         int newHeight = 0;
         String destinationPath;
         File destinationFile;
+        int[] test ;
 
         /*check if user has given command line arguments*/
 
@@ -330,6 +317,10 @@ public class SeamCarver{
         /*NOTE:print is only for testing, remove when finished*/
         //System.out.println("length of energyTable:" + energyTable.length);
         //System.out.println("And length of each of its elements: " + energyTable[0].length);
+
+        test = seam.findVerticalSeam();
+        System.out.println(Arrays.toString(test));
+        System.out.println(test.length);
 
     }
 }
