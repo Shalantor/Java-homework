@@ -35,6 +35,7 @@ public class SeamCarver{
     }
 
     /*Constructor in case the user wants to open an existing file*/
+    //TODO:open PrintWriter with try statement
     public SeamCarver(File file) throws IOException{
 
         this(ImageIO.read(file));
@@ -50,8 +51,7 @@ public class SeamCarver{
 
         statsFile = new PrintWriter( path + ".dbg" , "UTF-8" );
 
-        statsFile.println("Hello");
-        statsFile.close()
+        statsFile.println("Starting Width: " + width + " Starting Height:" + height);
 
     }
 
@@ -69,9 +69,8 @@ public class SeamCarver{
         path = path.substring( slashPosition + 1, dotPosition - 1 );
         statsFile = new PrintWriter( path + ".dbg" , "UTF-8" );
 
-        statsFile.println("Hello");
+        statsFile.println("Starting Width: " + width + " Starting Height:" + height);
 
-        statsFile.close();
 
 
     }
@@ -142,6 +141,9 @@ public class SeamCarver{
         //Update image dimensions
         this.width = inputImage.getWidth();
         this.height = inputImage.getHeight();
+
+        statsFile.println("Width after Scale: " + width + " Height after scale: " + height);
+
     }
 
     /*Method for removing horizontal seam from image*/
@@ -286,6 +288,8 @@ public class SeamCarver{
             }
         }
 
+        statsFile.close();
+
         //NOTE:prints for testing
         //System.out.println("Width after seamcarving: " + inputImage.getWidth() + " and height:" + inputImage.getHeight());
 
@@ -296,6 +300,7 @@ public class SeamCarver{
             System.out.println("Couldn't save file");
             System.exit(0);
         }
+
 
 
     }
@@ -322,6 +327,8 @@ public class SeamCarver{
 
     //method finds vertical seam. Returns seamTable which includes column numbers of image.
     public int[] findVerticalSeam(){
+
+        //TODO:make bottompixel favored if all 3 have same energy
 
 
         double bottom,bottomLeft,bottomRight;                                   //energies of pixels below the one we are checking
@@ -370,6 +377,7 @@ public class SeamCarver{
 
         //System.out.println("LOWEST SEAM");
         //System.out.println(favoredSeamEnergy);
+        statsFile.println(Arrays.toString(favoredSeam));
         return(favoredSeam);
     }
 
@@ -424,6 +432,7 @@ public class SeamCarver{
 
         //System.out.println("LOWEST SEAM");
         //System.out.println(favoredSeamEnergy);
+        statsFile.println(Arrays.toString(favoredSeam));
         return(favoredSeam);
     }
 
