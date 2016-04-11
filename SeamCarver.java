@@ -160,7 +160,7 @@ public class SeamCarver{
 
         //copy one row at a time
         for(int row = 0; row < seam.length; row ++){
-            
+
             int column = seam[row];
 
             if(column > 0){                             //copy pixels from the left side of seam
@@ -257,7 +257,7 @@ public class SeamCarver{
         int width = inputImage.getWidth();
         double bottom,bottomLeft,bottomRight;                                   //energies of pixels below the one we are checking
         int[] favoredSeam = null;
-        double favoredSeamEnergy = 0;
+        double favoredSeamEnergy = -1;
         int[] checkSeam ;                                                       //current Seam that is checked
         double checkSeamEnergy;                                                 //current sum of Seam that is checked
         int column;
@@ -292,7 +292,7 @@ public class SeamCarver{
 
             }
 
-            if(favoredSeamEnergy == 0 || favoredSeamEnergy > checkSeamEnergy ){ //is energy lower?
+            if(favoredSeamEnergy < 0 || favoredSeamEnergy > checkSeamEnergy ){ //is energy lower?
                 favoredSeam = checkSeam;
                 favoredSeamEnergy = checkSeamEnergy;
             }
@@ -307,6 +307,8 @@ public class SeamCarver{
         return(favoredSeam);
     }
 
+    //TODO:if there are more than one pixels, the algorithm doesn't choose the bottom one
+    //by default, check if it is better if it did so
     //method finds vertical seam. Returns seamTable which includes column numbers of image.
     public int[] findHorizontalSeam(){
 
@@ -315,7 +317,7 @@ public class SeamCarver{
         int width = inputImage.getWidth();
         double bottom,bottomLeft,bottomRight;                                   //energies of pixels below the one we are checking
         int[] favoredSeam = null;
-        double favoredSeamEnergy = 0;
+        double favoredSeamEnergy = -1;
         int[] checkSeam ;                                                       //current Seam that is checked
         double checkSeamEnergy;                                                 //current sum of Seam that is checked
         int row;
@@ -350,7 +352,7 @@ public class SeamCarver{
 
             }
 
-            if(favoredSeamEnergy == 0 || favoredSeamEnergy > checkSeamEnergy ){ //is energy lower?
+            if(favoredSeamEnergy < 0 || favoredSeamEnergy > checkSeamEnergy ){ //is energy lower?( en < 0 is for start)
                 favoredSeam = checkSeam;
                 favoredSeamEnergy = checkSeamEnergy;
             }
@@ -455,13 +457,13 @@ public class SeamCarver{
         //System.out.println("length of energyTable:" + energyTable.length);
         //System.out.println("And length of each of its elements: " + energyTable[0].length);
 
-        test = seam.findHorizontalSeam();
+        test = seam.findVerticalSeam();
 
         //PRINTS olny for testing
         System.out.println("SEAM");
         System.out.println(Arrays.toString(test));
 
-        seam.removeHorizontalSeam(test);
+        seam.removeVerticalSeam(test);
 
 
     }
