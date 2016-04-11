@@ -187,6 +187,7 @@ public class SeamCarver{
     public void seamCarve(int width,int height){
 
         int[] foundSeam;
+        File outputFile = new File("haaa.png");
 
         /*First get ratio of width/height, because we have to choose in which dimension
         to scale*/
@@ -239,8 +240,13 @@ public class SeamCarver{
         //NOTE:prints for testing
         System.out.println("Width after seamcarving: " + inputImage.getWidth() + " and height:" + inputImage.getHeight());
 
-
-
+        try{
+            ImageIO.write(inputImage,"png",outputFile);
+        }
+        catch(IOException e){
+            System.out.println("Couldn't save file");
+            System.exit(0);
+        }
 
 
     }
