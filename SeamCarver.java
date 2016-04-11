@@ -17,7 +17,7 @@ public class SeamCarver{
     private int[] seam; //seam with min sum which includes numbers of chosen columns
     private int width;  //image width
     private int height; //image height
-    private PrintWriter statsFile;         //file to write the seams and image dimensions
+    private PrintWriter statsFile = null ;         //file to write the seams and image dimensions
 
     /*primary Constructor, which will also be used be the other 2
     It also throws an IOException because it maybe was called from one
@@ -38,13 +38,42 @@ public class SeamCarver{
     public SeamCarver(File file) throws IOException{
 
         this(ImageIO.read(file));
-        statsFile = new PrintWriter( file.getName() + ".dbg" , "UTF-8" );
+
+        /*Get filename without extension*/
+        String path = file.getName();
+
+        int position = path.lastIndexOf(".");
+
+        if(position > 0){
+            path = path.substring(0,position);
+        }
+
+        statsFile = new PrintWriter( path + ".dbg" , "UTF-8" );
+
+        statsFile.println("Hello");
+        statsFile.close()
+
     }
 
     /*Constructor in case the user wants to open an image from an url*/
     public SeamCarver(URL link) throws IOException{
 
         this(ImageIO.read(link));
+
+        /*Get filename from url without extension*/
+
+        String path = link.getPath();
+        int dotPosition = path.lastIndexOf(".");
+        int slashPosition = path.lastIndexOf("/");
+
+        path = path.substring( slashPosition + 1, dotPosition - 1 );
+        statsFile = new PrintWriter( path + ".dbg" , "UTF-8" );
+
+        statsFile.println("Hello");
+
+        statsFile.close();
+
+
     }
 
 
