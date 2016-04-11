@@ -17,6 +17,7 @@ public class SeamCarver{
     private int[] seam; //seam with min sum which includes numbers of chosen columns
     private int width;  //image width
     private int height; //image height
+    private PrintWriter statsFile;         //file to write the seams and image dimensions
 
     /*primary Constructor, which will also be used be the other 2
     It also throws an IOException because it maybe was called from one
@@ -37,6 +38,7 @@ public class SeamCarver{
     public SeamCarver(File file) throws IOException{
 
         this(ImageIO.read(file));
+        statsFile = new PrintWriter( file.getName() + ".dbg" , "UTF-8" );
     }
 
     /*Constructor in case the user wants to open an image from an url*/
@@ -44,6 +46,7 @@ public class SeamCarver{
 
         this(ImageIO.read(link));
     }
+
 
 
     /*Method for calculating the energy of a pixel*/
@@ -443,6 +446,7 @@ public class SeamCarver{
         }
 
 
+
         /*TODO:optimize WORKAROUND of nextInt() not consuming \n character*/
         /*Ask for desired dimensions of image to create*/
 
@@ -480,18 +484,6 @@ public class SeamCarver{
         /*NOTE: Just for testing purposes, remove after successfull testing*/
         seam.seamCarve(newWidth,newHeight);
 
-        //seam.createEnergyTable();
-        /*NOTE:print is only for testing, remove when finished*/
-        //System.out.println("length of energyTable:" + energyTable.length);
-        //System.out.println("And length of each of its elements: " + energyTable[0].length);
-
-        /*test = seam.findVerticalSeam();
-
-        //PRINTS olny for testing
-        System.out.println("SEAM");
-        System.out.println(Arrays.toString(test));
-
-        seam.removeVerticalSeam(test);*/
 
 
     }
