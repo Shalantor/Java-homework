@@ -100,7 +100,7 @@ public class SeamCarver{
         graphics.dispose();
 
         /*NOTE:Next line is just for testing if resize worked, remove after testing*/
-        System.out.println("New Height:" + resizedImage.getHeight() + " New Width:" + resizedImage.getWidth());
+        //System.out.println("New Height:" + resizedImage.getHeight() + " New Width:" + resizedImage.getWidth());
         inputImage = resizedImage;
     }
 
@@ -140,7 +140,7 @@ public class SeamCarver{
 
         inputImage = newImage;
 
-        System.out.println("IMAGE height after crop:" + inputImage.getHeight());
+        //System.out.println("IMAGE height after crop:" + inputImage.getHeight());
     }
 
     /*Method for removing vertical seam from picture*/
@@ -178,13 +178,15 @@ public class SeamCarver{
 
         inputImage = newImage;
 
-        System.out.println("ImageWIdth after crop: " + inputImage.getWidth());
+        //System.out.println("ImageWIdth after crop: " + inputImage.getWidth());
     }
 
 
     /*Method for applying Seam Carve algorithm onto picture
     width, height = dimensions of the image we want to get after applying the seamCarve algorithm*/
     public void seamCarve(int width,int height){
+
+        int[] foundSeam;
 
         /*First get ratio of width/height, because we have to choose in which dimension
         to scale*/
@@ -194,7 +196,7 @@ public class SeamCarver{
         int scaledWidth = Math.round(height * ratio) ;
         int scaledHeight = Math.round(width / ratio) ;
 
-        System.out.println("ScaledHeight is " + scaledHeight + " and scaledWidth is " + scaledWidth);
+        //System.out.println("ScaledHeight is " + scaledHeight + " and scaledWidth is " + scaledWidth);
 
         /*First check if scaling to one Dimension doesnt make the other one
         smaller than the result of seamcarve algorithm dimensions,
@@ -217,6 +219,25 @@ public class SeamCarver{
         /*Scale image*/
 
         this.scale(scaledWidth,scaledHeight);
+
+        /*apply seam carving algorithm*/
+        if(inputImage.getHeight() == scaledHeight){//remove vertical seams
+            while(inputImage.getWidth() > width ){
+                this.createEnergyTable();
+                foundSeam = this.findVerticalSeam();
+                removeVerticalSeam(foundSeam);
+            }
+        }
+        else{
+            while(inputImage.getHeight() > height){//remove horizontal seams
+                this.createEnergyTable();
+                foundSeam = this.findHorizontalSeam();
+                removeHorizontalSeam(foundSeam);
+            }
+        }
+
+        //NOTE:prints for testing
+        System.out.println("Width after seamcarving: " + inputImage.getWidth() + " and height:" + inputImage.getHeight());
 
 
 
@@ -242,10 +263,10 @@ public class SeamCarver{
         }
 
         /*NOTE:print is only for testing, remove when finished*/
-        System.out.println("ENERGYMAP");
+        /*System.out.println("ENERGYMAP");
         for (int i=0; i<inputImage.getHeight(); i++){
             System.out.println(Arrays.toString(energyTable[i]));
-        }
+        }*/
     }
 
 
@@ -299,8 +320,8 @@ public class SeamCarver{
 
         }
 
-        System.out.println("LOWEST SEAM");
-        System.out.println(favoredSeamEnergy);
+        //System.out.println("LOWEST SEAM");
+        //System.out.println(favoredSeamEnergy);
 
 
 
@@ -359,8 +380,8 @@ public class SeamCarver{
 
         }
 
-        System.out.println("LOWEST SEAM");
-        System.out.println(favoredSeamEnergy);
+        //System.out.println("LOWEST SEAM");
+        //System.out.println(favoredSeamEnergy);
 
 
 
@@ -452,18 +473,18 @@ public class SeamCarver{
         /*NOTE: Just for testing purposes, remove after successfull testing*/
         seam.seamCarve(newWidth,newHeight);
 
-        seam.createEnergyTable();
+        //seam.createEnergyTable();
         /*NOTE:print is only for testing, remove when finished*/
         //System.out.println("length of energyTable:" + energyTable.length);
         //System.out.println("And length of each of its elements: " + energyTable[0].length);
 
-        test = seam.findVerticalSeam();
+        /*test = seam.findVerticalSeam();
 
         //PRINTS olny for testing
         System.out.println("SEAM");
         System.out.println(Arrays.toString(test));
 
-        seam.removeVerticalSeam(test);
+        seam.removeVerticalSeam(test);*/
 
 
     }
