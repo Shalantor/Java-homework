@@ -237,7 +237,6 @@ public class SeamCarver{
     public void seamCarve(int width,int height){
 
         int[] foundSeam;
-        File outputFile = new File("haaa.png");
 
         /*First get ratio of width/height, because we have to choose in which dimension
         to scale*/
@@ -293,6 +292,14 @@ public class SeamCarver{
         //NOTE:prints for testing
         //System.out.println("Width after seamcarving: " + inputImage.getWidth() + " and height:" + inputImage.getHeight());
 
+
+
+    }
+
+    //Method to store file
+    //TODO:ask if changing constructors is allowed
+    public void storeImage(File outputFile){
+
         try{
             ImageIO.write(inputImage,"png",outputFile);
         }
@@ -300,8 +307,6 @@ public class SeamCarver{
             System.out.println("Couldn't save file");
             System.exit(0);
         }
-
-
 
     }
 
@@ -510,9 +515,9 @@ public class SeamCarver{
 
         /*If file with the same name as detinationFile exists print an error message
         end exit the programm*/
-        System.out.print("Please enter the name of destination file (this has no effect):");
+        System.out.print("Please enter the name of destination file :");
         destinationPath = input.nextLine();
-        destinationFile = new File(destinationPath);
+        destinationFile = new File(destinationPath + ".png");
 
         if(destinationFile.isFile()){
             System.out.println("File already exists");
@@ -521,6 +526,8 @@ public class SeamCarver{
 
         /*NOTE: Just for testing purposes, remove after successfull testing*/
         seam.seamCarve(newWidth,newHeight);
+
+        seam.storeImage(destinationFile);
 
 
 
