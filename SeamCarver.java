@@ -221,8 +221,9 @@ public class SeamCarver{
 
         this.scale(scaledWidth,scaledHeight);
 
+
         /*apply seam carving algorithm*/
-        if(inputImage.getHeight() == scaledHeight){//remove vertical seams
+        if(height == scaledHeight){//remove vertical seams
             while(inputImage.getWidth() > width ){
                 this.createEnergyTable();
                 foundSeam = this.findVerticalSeam();
@@ -238,7 +239,7 @@ public class SeamCarver{
         }
 
         //NOTE:prints for testing
-        System.out.println("Width after seamcarving: " + inputImage.getWidth() + " and height:" + inputImage.getHeight());
+        //System.out.println("Width after seamcarving: " + inputImage.getWidth() + " and height:" + inputImage.getHeight());
 
         try{
             ImageIO.write(inputImage,"png",outputFile);
