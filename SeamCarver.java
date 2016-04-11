@@ -15,6 +15,8 @@ public class SeamCarver{
     private Graphics2D graphics;
     private static double [][] energyTable;
     private int[] seam; //seam with min sum which includes numbers of chosen columns
+    private int width;  //image width
+    private int height; //image height
 
     /*primary Constructor, which will also be used be the other 2
     It also throws an IOException because it maybe was called from one
@@ -23,9 +25,11 @@ public class SeamCarver{
     public SeamCarver(BufferedImage image) throws IOException{
 
         inputImage = image;
+        width = inputImage.getWidth();
+        height = inputImage.getHeight();
 
         /*TODO:Remove line below this one after testing that it works*/
-        System.out.println("Height:" + inputImage.getHeight() + " Width:" + inputImage.getWidth());
+        System.out.println("Height:" + height + " Width:" + width);
 
     }
 
@@ -59,18 +63,18 @@ public class SeamCarver{
         int adjustedRow = row - 1;
 
         if(adjustedRow < 0){
-            adjustedRow = inputImage.getHeight() - 1;
+            adjustedRow = height - 1;
         }
 
         if(adjustedCol < 0){
-            adjustedCol = inputImage.getWidth() - 1;
+            adjustedCol = width - 1;
         }
 
         /*Colors of surrounding pixels*/
         Color left = new Color(inputImage.getRGB( adjustedCol , row ));
-        Color right = new Color(inputImage.getRGB( (col+1) % inputImage.getWidth() , row ));
+        Color right = new Color(inputImage.getRGB( (col+1) % width , row ));
         Color top = new Color(inputImage.getRGB( col , adjustedRow));
-        Color bottom = new Color(inputImage.getRGB( col , (row+1) % inputImage.getHeight() ));
+        Color bottom = new Color(inputImage.getRGB( col , (row+1) % height ));
 
         /*Calculating energy*/
         energyX = Math.pow( left.getRed() - right.getRed() , 2 ) + Math.pow( left.getGreen() - right.getGreen() , 2 )
@@ -102,14 +106,18 @@ public class SeamCarver{
         /*NOTE:Next line is just for testing if resize worked, remove after testing*/
         //System.out.println("New Height:" + resizedImage.getHeight() + " New Width:" + resizedImage.getWidth());
         inputImage = resizedImage;
+
+        //Update image dimensions
+        this.width = inputImage.getWidth();
+        this.height = inputImage.getHeight();
     }
 
     /*Method for removing horizontal seam from image*/
     public void removeHorizontalSeam(int[] seam){
 
         //create the new image
-        BufferedImage newImage = new BufferedImage(inputImage.getWidth(),
-                                inputImage.getHeight() -1 , inputImage.getType());
+        BufferedImage newImage = new BufferedImage(width,
+                                height -1 , inputImage.getType());
 
         WritableRaster newImageRaster = newImage.getRaster() ;
 
@@ -117,7 +125,7 @@ public class SeamCarver{
         Raster data = inputImage.getData();
 
         //garbage array TODO:check use of garbage array
-        float[] garbArray = new float[inputImage.getHeight() * inputImage.getWidth()];
+        float[] garbArray = new float[width * 10];
 
         //remove horizontal seam column by column
         for( int column = 0; column < seam.length; column ++){
@@ -129,7 +137,7 @@ public class SeamCarver{
             }
 
 
-                if(seam[column] < inputImage.getHeight () - 1){//copy pixels under seam
+                if(seam[column] < height - 1){//copy pixels under seam
                     int heightAfter = newImage.getHeight() - row ;
                     newImageRaster.setPixels(column , row ,  1 , heightAfter,
                                             data.getPixels(column , row + 1, 1 , heightAfter , garbArray));
@@ -140,6 +148,10 @@ public class SeamCarver{
 
         inputImage = newImage;
 
+        //update image dimensions
+        height = inputImage.getHeight();
+        width = inputImage.getWidth();
+
         //System.out.println("IMAGE height after crop:" + inputImage.getHeight());
     }
 
@@ -147,8 +159,8 @@ public class SeamCarver{
     public void removeVerticalSeam(int[] seam){
 
         //create the new image
-        BufferedImage newImage = new BufferedImage(inputImage.getWidth() - 1,
-                                inputImage.getHeight() , inputImage.getType());
+        BufferedImage newImage = new BufferedImage(width - 1,
+                                height , inputImage.getType());
 
         WritableRaster newImageRaster = newImage.getRaster() ;
 
@@ -156,7 +168,7 @@ public class SeamCarver{
         final Raster data = inputImage.getData();
 
         //garbage array TODO:check use of garbage array
-        float[] garbArray = new float[inputImage.getWidth() * inputImage.getHeight()];
+        float[] garbArray = new float[height * 10];
 
         //copy one row at a time
         for(int row = 0; row < seam.length; row ++){
@@ -168,7 +180,7 @@ public class SeamCarver{
                                         data.getPixels(0, row, column, 1, garbArray));
             }
 
-            if(seam[row] < inputImage.getWidth() - 1){  //copy pixels from the right side of seam
+            if(seam[row] < width - 1){  //copy pixels from the right side of seam
                 int widthAfter = newImage.getWidth() - column;
                 newImageRaster.setPixels(column , row, widthAfter, 1,
                                         data.getPixels(column + 1, row, widthAfter, 1, garbArray));
@@ -177,6 +189,10 @@ public class SeamCarver{
         }
 
         inputImage = newImage;
+
+        //update image dimensions
+        width = inputImage.getWidth();
+        height = inputImage.getHeight();
 
         //System.out.println("ImageWIdth after crop: " + inputImage.getWidth());
     }
@@ -191,7 +207,7 @@ public class SeamCarver{
 
         /*First get ratio of width/height, because we have to choose in which dimension
         to scale*/
-        float ratio = (float)inputImage.getWidth() / inputImage.getHeight() ;
+        float ratio = (float) this.width / this.height ;
 
         /*Then calculate the respective width and height we would get for each choice*/
         int scaledWidth = Math.round(height * ratio) ;
@@ -224,14 +240,14 @@ public class SeamCarver{
 
         /*apply seam carving algorithm*/
         if(height == scaledHeight){//remove vertical seams
-            while(inputImage.getWidth() > width ){
+            while(this.width > width ){
                 this.createEnergyTable();
                 foundSeam = this.findVerticalSeam();
                 removeVerticalSeam(foundSeam);
             }
         }
         else{
-            while(inputImage.getHeight() > height){//remove horizontal seams
+            while(this.height > height){//remove horizontal seams
                 this.createEnergyTable();
                 foundSeam = this.findHorizontalSeam();
                 removeHorizontalSeam(foundSeam);
@@ -255,11 +271,6 @@ public class SeamCarver{
     //method creates or updates energyTable by using energy()
     public void createEnergyTable(){
 
-        int width, height;
-
-        width = inputImage.getWidth(); //updated value of newWidth
-        height = inputImage.getHeight(); //updated value of newHeight
-
         energyTable = new double[height][width];
 
         /*Iterating over pixels of image*/
@@ -281,8 +292,6 @@ public class SeamCarver{
     public int[] findVerticalSeam(){
 
 
-        int height = inputImage.getHeight();
-        int width = inputImage.getWidth();
         double bottom,bottomLeft,bottomRight;                                   //energies of pixels below the one we are checking
         int[] favoredSeam = null;
         double favoredSeamEnergy = -1;
@@ -329,9 +338,6 @@ public class SeamCarver{
 
         //System.out.println("LOWEST SEAM");
         //System.out.println(favoredSeamEnergy);
-
-
-
         return(favoredSeam);
     }
 
@@ -340,9 +346,6 @@ public class SeamCarver{
     //method finds vertical seam. Returns seamTable which includes column numbers of image.
     public int[] findHorizontalSeam(){
 
-
-        int height = inputImage.getHeight();
-        int width = inputImage.getWidth();
         double bottom,bottomLeft,bottomRight;                                   //energies of pixels below the one we are checking
         int[] favoredSeam = null;
         double favoredSeamEnergy = -1;
@@ -389,9 +392,6 @@ public class SeamCarver{
 
         //System.out.println("LOWEST SEAM");
         //System.out.println(favoredSeamEnergy);
-
-
-
         return(favoredSeam);
     }
 
