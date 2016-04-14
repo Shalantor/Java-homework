@@ -1,4 +1,4 @@
-/*Class that implements the Seam Carving algorithm*/
+/* Class that implements the Seam Carving algorithm*/
 
 import javax.imageio.ImageIO;
 import java.awt.image.*;
