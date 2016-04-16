@@ -225,35 +225,59 @@ public class SeamCarver{
     of the seam and for the pixel right of the last pixel of the seam*/
     public void updateHorizontal(int[] seam){
 
-        int[] pixelsToUpdate = new int[ 2 * seam.length + 2];
-        int iterator = 0;
-        int removePosition = 0;
-        int j = 0 ,i = 0;
+        int[] abovePixels = new int[ seam.length];
+        int[] belowPixels = new int[ seam.length];
+        int i = 0;
         double newEnergy;
+        int leftPixel = 0;
+        int rightPixel = 0;
+
+        //first left and right pixel
+        if( seam[seam.length -1] != seam[0]){
+            leftPixel = (seam[seam.length -1] +1 ) % height;
+            if(leftPixel > seam[seam.length - 1 ]){
+                leftPixel -= 1;
+            }
+            rightPixel = (seam[0] + 1) % height;
+            if(rightPixel > seam[0]){
+                rightPixel -= 1;
+            }
+        }
 
         //pixels above and below seam
         for(int row : seam){
-            pixelsToUpdate[iterator] = (row - 1 + height) % height;       //top pixel
-            pixelsToUpdate[iterator+1] = (row + 1) % height;              //bottom pixel
+            abovePixels[i] = (row - 1 + height) % height;       //top pixel
+            belowPixels[i] = (row +1) % height;
+
+            /*Adjust position*/
+            if(abovePixels[i] > row){
+                abovePixels[i] -= 1;
+            }
+
+            if(belowPixels[i] > row){
+                belowPixels[i] -= 1;
+            }
 
             //now remove pixelEnergy from table
-            energyTable.get(row).remove(removePosition);
-
-            //update iterators
-            iterator += 2;
-            removePosition += 1;
+            energyTable.get(row).remove(i);
+            i += 1;
         }
 
-        //the remaining two pixels
-        pixelsToUpdate[pixelsToUpdate.length - 2] = (seam[0] - 1 + width) % width;     //left from first pixel of seam
-        pixelsToUpdate[pixelsToUpdate.length - 1] = (seam[seam.length -1 ] + 1) % width;   //right from last pixel of seam
-
         //now update the energies of surrounding pixels of seam
-        for(i = 0,j=0; i < width; i++, j += 2){
-            newEnergy = energy(pixelsToUpdate[j],i);
-            energyTable.get(pixelsToUpdate[j]).set(i,newEnergy);
-            newEnergy = energy(pixelsToUpdate[j+1],i);
-            energyTable.get(pixelsToUpdate[j+1]).set(i,newEnergy);
+        for(i = 0; i < width; i++){
+            newEnergy = energy(abovePixels[i],i);
+            energyTable.get(abovePixels[i]).set(i,newEnergy);
+            newEnergy = energy(belowPixels[i],i);
+            energyTable.get(belowPixels[i]).set(i,newEnergy);
+        }
+
+        if( seam[seam.length -1] != seam[0]){
+            //far rightPixel
+            newEnergy = energy(rightPixel,0);
+            energyTable.get(rightPixel).set(0,newEnergy);
+            //far left pixel
+            newEnergy = energy(leftPixel,width-1);
+            energyTable.get(leftPixel).set(width-1,newEnergy);
         }
 
     }
@@ -263,37 +287,60 @@ public class SeamCarver{
     right from the seam and the one above the first pixel and also the one below the last pixelEnergy*/
     public void updateVertical(int[] seam){
 
-        int[] pixelsToUpdate = new int[ 2 * seam.length + 2];
-        int iterator = 0;
-        int removePosition = 0;
-        int j = 0 ,i = 0;
+        int[] leftPixels = new int[ seam.length ];
+        int[] rightPixels = new int[ seam.length];
         double newEnergy;
+        int i = 0;
+        int topPixel = 0;
+        int bottomPixel = 0;
+
+        //first top and bottom pixel
+        if( seam[seam.length -1 ] != seam[0]){
+            topPixel = (seam[seam.length -1 ] + 1) % width;
+            if(topPixel > seam[seam.length -1 ] ){
+                topPixel -= 1;
+            }
+            bottomPixel = (seam[0] + 1) % width;
+            if(bottomPixel > seam[0] ){
+                bottomPixel -= 1;
+            }
+        }
 
         //pixels left and right from seam
         for(int column : seam){
-            pixelsToUpdate[iterator] = (column - 1 + width) % width;       //left pixel
-            pixelsToUpdate[iterator+1] = (column + 1) % width;              //right pixel
+            leftPixels[i] = (column - 1 + width) % width;       //left pixel
+            rightPixels[i] = (column+1) % width ;               //right pixel
+
+            /*Adjust position*/
+            if(leftPixels[i] > column){
+                leftPixels[i] -= 1;
+            }
+
+            if(rightPixels[i] > column){
+                rightPixels[i] -= 1;
+            }
 
             //now remove pixelEnergy from table
-            energyTable.get(removePosition).remove(column);
-
-            //update iterators
-            iterator += 2;
-            removePosition += 1;
+            energyTable.get(i).remove(column);
+            i += 1;
         }
-
-        //the remaining two pixels
-        pixelsToUpdate[pixelsToUpdate.length - 2] = (seam[0] - 1 + height) % height;     //left from first pixel of seam
-        pixelsToUpdate[pixelsToUpdate.length - 1] = (seam[seam.length -1 ] + 1) % height;   //right from last pixel of seam
 
         //now update the energies of surrounding pixels of seam
-        for(i = 0,j=0; i < height ; i++, j += 2){
-            newEnergy = energy(i,pixelsToUpdate[j]);
-            energyTable.get(i).set(pixelsToUpdate[j],newEnergy);
-            newEnergy = energy(i,pixelsToUpdate[j+1]);
-            energyTable.get(i).set(pixelsToUpdate[j+1],newEnergy);
+        for(i = 0; i < height ; i++){
+            newEnergy = energy(i,leftPixels[i]);
+            energyTable.get(i).set(leftPixels[i],newEnergy);
+            newEnergy = energy(i,rightPixels[i]);
+            energyTable.get(i).set(rightPixels[i],newEnergy);
         }
 
+        if( seam[seam.length -1 ] != seam[0]){
+            //far bottom pixel
+            newEnergy = energy(0,bottomPixel);
+            energyTable.get(0).set(bottomPixel,newEnergy);
+            //far top pixel
+            newEnergy = energy(height-1,topPixel);
+            energyTable.get(height-1).set(topPixel,newEnergy);
+        }
 
     }
 
