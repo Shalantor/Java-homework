@@ -13,7 +13,7 @@ public class SeamCarver{
     /*the image to be processed*/
     private BufferedImage inputImage;
     private Graphics2D graphics;
-    private static double [][] energyTable;
+    private ArrayList< ArrayList<Double> > energyTable = new ArrayList< ArrayList<Double> >();
     private int[] seam;                         //seam with min sum which includes numbers of chosen columns
     private int width;                          //image width
     private int height;                         //image height
@@ -258,14 +258,14 @@ public class SeamCarver{
         /*apply seam carving algorithm*/
         if(height == scaledHeight){//remove vertical seams
             while(this.width > width ){
-                this.createEnergyTable();
+                //this.createEnergyTable();
                 foundSeam = this.findVerticalSeam();
                 removeVerticalSeam(foundSeam);
             }
         }
         else{
             while(this.height > height){//remove horizontal seams
-                this.createEnergyTable();
+                //this.createEnergyTable();
                 foundSeam = this.findHorizontalSeam();
                 removeHorizontalSeam(foundSeam);
             }
@@ -293,13 +293,15 @@ public class SeamCarver{
     //method creates or updates energyTable by using energy()
     public void createEnergyTable(){
 
-        energyTable = new double[height][width];
+        ArrayList<Double> row ;
 
         /*Iterating over pixels of image*/
         for (int i=0; i < height; i++){
+            row = new ArrayList<Double>();              //new row
             for (int j=0; j < width; j++){
-                energyTable[i][j] = energy(i,j);
+                row.add( energy(i,j) );                 //add energy to row
             }
+            energyTable.add(row);                       //add row to table
         }
 
     }
