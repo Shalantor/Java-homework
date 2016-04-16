@@ -219,6 +219,83 @@ public class SeamCarver{
 
     }
 
+    /*Method to update the energy table when a horizontal seam is removed
+    pixels to update are the pixel below and above the seam , so 2 times the
+    number of elements the seam has plus 2 for the pixel left of the first pixel
+    of the seam and for the pixel right of the last pixel of the seam*/
+    public void updateHorizontal(int[] seam){
+
+        int[] pixelsToUpdate = new int[ 2 * seam.length + 2];
+        int iterator = 0;
+        int removePosition = 0;
+        int j = 0 ,i = 0;
+        double newEnergy;
+
+        //pixels above and below seam
+        for(int row : seam){
+            pixelsToUpdate[iterator] = (row - 1 + height) % height;       //top pixel
+            pixelsToUpdate[iterator+1] = (row + 1) % height;              //bottom pixel
+
+            //now remove pixelEnergy from table
+            energyTable.get(row).remove(removePosition);
+
+            //update iterators
+            iterator += 2;
+            removePosition += 1;
+        }
+
+        //the remaining two pixels
+        pixelsToUpdate[pixelsToUpdate.length - 2] = (seam[0] - 1 + width) % width;     //left from first pixel of seam
+        pixelsToUpdate[pixelsToUpdate.length - 1] = (seam[seam.length -1 ] + 1) % width;   //right from last pixel of seam
+
+        //now update the energies of surrounding pixels of seam
+        for(i = 0,j=0; i < width; i++, j += 2){
+            newEnergy = energy(pixelsToUpdate[j],i);
+            energyTable.get(pixelsToUpdate[j]).set(i,newEnergy);
+            newEnergy = energy(pixelsToUpdate[j+1],i);
+            energyTable.get(pixelsToUpdate[j+1]).set(i,newEnergy);
+        }
+
+    }
+
+    /*Method to update energy table when a vertical seam is removed
+    pixels to update are the pixels surrounding the seam , which are the pixels left and
+    right from the seam and the one above the first pixel and also the one below the last pixelEnergy*/
+    public void updateVertical(int[] seam){
+
+        int[] pixelsToUpdate = new int[ 2 * seam.length + 2];
+        int iterator = 0;
+        int removePosition = 0;
+        int j = 0 ,i = 0;
+        double newEnergy;
+
+        //pixels left and right from seam
+        for(int column : seam){
+            pixelsToUpdate[iterator] = (column - 1 + width) % width;       //left pixel
+            pixelsToUpdate[iterator+1] = (column + 1) % width;              //right pixel
+
+            //now remove pixelEnergy from table
+            energyTable.get(removePosition).remove(column);
+
+            //update iterators
+            iterator += 2;
+            removePosition += 1;
+        }
+
+        //the remaining two pixels
+        pixelsToUpdate[pixelsToUpdate.length - 2] = (seam[0] - 1 + height) % height;     //left from first pixel of seam
+        pixelsToUpdate[pixelsToUpdate.length - 1] = (seam[seam.length -1 ] + 1) % height;   //right from last pixel of seam
+
+        //now update the energies of surrounding pixels of seam
+        for(i = 0,j=0; i < height ; i++, j += 2){
+            newEnergy = energy(i,pixelsToUpdate[j]);
+            energyTable.get(i).set(pixelsToUpdate[j],newEnergy);
+            newEnergy = energy(i,pixelsToUpdate[j+1]);
+            energyTable.get(i).set(pixelsToUpdate[j+1],newEnergy);
+        }
+
+
+    }
 
     /*Method for applying Seam Carve algorithm onto picture
     width, height = dimensions of the image we want to get after applying the seamCarve algorithm*/
@@ -254,22 +331,23 @@ public class SeamCarver{
         }
 
         /*Scale image*/
-
         this.scale(scaledWidth,scaledHeight);
 
+        /*Create energytable*/
+        this.createEnergyTable();
 
         /*apply seam carving algorithm*/
         if(height == scaledHeight){//remove vertical seams
             while(this.width > width ){
-                this.createEnergyTable();
-                foundSeam = this.findVerticalSeam();
+                foundSeam = findVerticalSeam();
+                updateVertical(foundSeam);
                 removeVerticalSeam(foundSeam);
             }
         }
         else{
             while(this.height > height){//remove horizontal seams
-                this.createEnergyTable();
-                foundSeam = this.findHorizontalSeam();
+                foundSeam = findHorizontalSeam();
+                updateHorizontal(foundSeam);
                 removeHorizontalSeam(foundSeam);
             }
         }
