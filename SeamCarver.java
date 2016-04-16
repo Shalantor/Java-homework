@@ -1,4 +1,4 @@
-/* Class that implements the Seam Carving algorithm*/
+/*Class that implements the Seam Carving algorithm*/
 
 import javax.imageio.ImageIO;
 import java.awt.image.*;
@@ -131,6 +131,9 @@ public class SeamCarver{
         /*Writing to file*/
         statsFile.println("Width after Scale: " + width + " Height after scale: " + height);
 
+        /*Just for testing remove after*/
+        System.out.println("New Height: " + height + " New Width: " + width);
+
     }
 
     /*Method for removing horizontal seam from image*/
@@ -258,14 +261,14 @@ public class SeamCarver{
         /*apply seam carving algorithm*/
         if(height == scaledHeight){//remove vertical seams
             while(this.width > width ){
-                //this.createEnergyTable();
+                this.createEnergyTable();
                 foundSeam = this.findVerticalSeam();
                 removeVerticalSeam(foundSeam);
             }
         }
         else{
             while(this.height > height){//remove horizontal seams
-                //this.createEnergyTable();
+                this.createEnergyTable();
                 foundSeam = this.findHorizontalSeam();
                 removeHorizontalSeam(foundSeam);
             }
@@ -294,14 +297,15 @@ public class SeamCarver{
     public void createEnergyTable(){
 
         ArrayList<Double> row ;
+        energyTable = new ArrayList<ArrayList<Double>>();
 
         /*Iterating over pixels of image*/
         for (int i=0; i < height; i++){
-            row = new ArrayList<Double>();              //new row
+            row = new ArrayList<Double> ();
             for (int j=0; j < width; j++){
-                row.add( energy(i,j) );                 //add energy to row
+                row.add( energy(i,j) );
             }
-            energyTable.add(row);                       //add row to table
+            energyTable.add(row);
         }
 
     }
@@ -327,14 +331,14 @@ public class SeamCarver{
             column = i;
             checkSeam = new int[height];
             checkSeam[0] = column ;                      //add column to seam
-            checkSeamEnergy = energy (0,column);         //add energy of that column
+            checkSeamEnergy = energyTable.get(0).get(column);         //add energy of that column
 
             for ( int j = 0; j < height - 1 ; j++ ){     //iterating over ROWS
 
                 /*Getting energies of pixels*/
-                bottom = energy( j+1 , column);
-                bottomRight = energy( j+1 , (column + 1) % width );
-                bottomLeft = energy( j+1 , ( column -1 + width ) % width) ;
+                bottom = energyTable.get( j+1 ).get( column );
+                bottomRight = energyTable.get(j+1).get( (column + 1) % width );
+                bottomLeft = energyTable.get( j+1 ).get( ( column -1 + width ) % width) ;
 
                 /*Calculate min energy*/
                 minEnergy = Math.min( Math.min( bottom , bottomLeft ) , bottomRight);
@@ -382,14 +386,14 @@ public class SeamCarver{
             row = i;
             checkSeam = new int[width];
             checkSeam[0] = row ;                                    //add column to seam
-            checkSeamEnergy = energy (row,0);                       //add energy of that column
+            checkSeamEnergy = energyTable.get(row).get(0);                    //add energy of that column
 
             for ( int j = 0; j < width - 1 ; j++ ){                 //iterating over COLUMNS
 
                 /*Getting energies of pixels*/
-                bottom = energy( row , j+1 );
-                bottomRight = energy( (row + 1) % height , j+1 );
-                bottomLeft = energy( ( row -1 + height ) % height , j+1) ;
+                bottom = energyTable.get(row).get(j+1);
+                bottomRight = energyTable.get( (row + 1)  % height ).get( j+1 );
+                bottomLeft = energyTable.get( ( row -1 + height ) % height ).get( j+1) ;
 
                 minEnergy = Math.min( Math.min( bottom , bottomLeft ) , bottomRight);
 
