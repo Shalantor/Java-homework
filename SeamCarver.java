@@ -259,33 +259,25 @@ public class SeamCarver{
             }
 
             //now remove pixelEnergy from table
-            try{
-                energyTable.get(row).remove(i);
-            }
-            catch(IndexOutOfBoundsException e){
-                System.out.println("i: " + i + " row: " + row);
-                System.out.println("W: " + width + " H: " + height);
-                System.out.println(Arrays.toString(seam));
-                System.exit(0);
-            }
+            energyTable.get(i).remove(row);
             i += 1;
         }
 
         //now update the energies of surrounding pixels of seam
         for(i = 0; i < width; i++){
             newEnergy = energy(abovePixels[i],i);
-            energyTable.get(abovePixels[i]).set(i,newEnergy);
+            energyTable.get(i).set(abovePixels[i],newEnergy);
             newEnergy = energy(belowPixels[i],i);
-            energyTable.get(belowPixels[i]).set(i,newEnergy);
+            energyTable.get(i).set(belowPixels[i],newEnergy);
         }
 
         if( seam[seam.length -1] != seam[0]){
             //far rightPixel
             newEnergy = energy(rightPixel,0);
-            energyTable.get(rightPixel).set(0,newEnergy);
+            energyTable.get(0).set(rightPixel,newEnergy);
             //far left pixel
             newEnergy = energy(leftPixel,width-1);
-            energyTable.get(leftPixel).set(width-1,newEnergy);
+            energyTable.get(width-1).set(leftPixel,newEnergy);
         }
 
     }
@@ -387,13 +379,11 @@ public class SeamCarver{
         }
 
         /*Scale image*/
-        this.scale(scaledWidth,scaledHeight);
-
-        /*Create energytable*/
-        this.createEnergyTable();
+        scale(scaledWidth,scaledHeight);
 
         /*apply seam carving algorithm*/
         if(height == scaledHeight){//remove vertical seams
+            createEnergyTable("vertical");
             while(this.width > width ){
                 foundSeam = findVerticalSeam();
                 updateVertical(foundSeam);
@@ -401,6 +391,7 @@ public class SeamCarver{
             }
         }
         else{
+            createEnergyTable("horizontal");
             while(this.height > height){//remove horizontal seams
                 foundSeam = findHorizontalSeam();
                 updateHorizontal(foundSeam);
@@ -428,18 +419,30 @@ public class SeamCarver{
     }
 
     //method creates or updates energyTable by using energy()
-    public void createEnergyTable(){
+    private void createEnergyTable(String type ){
 
         ArrayList<Double> row ;
+        ArrayList<Double> column;
         energyTable = new ArrayList<ArrayList<Double>>();
 
-        /*Iterating over pixels of image*/
-        for (int i=0; i < height; i++){
-            row = new ArrayList<Double> ();
-            for (int j=0; j < width; j++){
-                row.add( energy(i,j) );
+        if(type == "vertical"){
+            /*Iterating over pixels of image*/
+            for (int i=0; i < height; i++){
+                row = new ArrayList<Double> ();
+                for (int j=0; j < width; j++){
+                    row.add( energy(i,j) );
+                }
+                energyTable.add(row);
             }
-            energyTable.add(row);
+        }
+        else{
+            for (int i=0; i < width; i++){
+                column = new ArrayList<Double> ();
+                for (int j=0; j < height; j++){
+                    column.add( energy(j,i) );
+                }
+                energyTable.add(column);
+            }
         }
 
     }
@@ -520,14 +523,14 @@ public class SeamCarver{
             row = i;
             checkSeam = new int[width];
             checkSeam[0] = row ;                                    //add column to seam
-            checkSeamEnergy = energyTable.get(row).get(0);                    //add energy of that column
+            checkSeamEnergy = energyTable.get(0).get(row);                    //add energy of that column
 
             for ( int j = 0; j < width - 1 ; j++ ){                 //iterating over COLUMNS
 
                 /*Getting energies of pixels*/
-                bottom = energyTable.get(row).get(j+1);
-                bottomRight = energyTable.get( (row + 1)  % height ).get( j+1 );
-                bottomLeft = energyTable.get( ( row -1 + height ) % height ).get( j+1) ;
+                bottom = energyTable.get(j+1).get(row);
+                bottomRight = energyTable.get( j+1 ).get( (row + 1)  % height  );
+                bottomLeft = energyTable.get( ( j+1 )).get( ( row -1 + height ) % height ) ;
 
                 minEnergy = Math.min( Math.min( bottom , bottomLeft ) , bottomRight);
 
