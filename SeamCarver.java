@@ -258,14 +258,14 @@ public class SeamCarver{
         /*apply seam carving algorithm*/
         if(height == scaledHeight){//remove vertical seams
             while(this.width > width ){
-                this.createEnergyTable();
+                //this.createEnergyTable();
                 foundSeam = this.findVerticalSeam();
                 removeVerticalSeam(foundSeam);
             }
         }
         else{
             while(this.height > height){//remove horizontal seams
-                this.createEnergyTable();
+                //this.createEnergyTable();
                 foundSeam = this.findHorizontalSeam();
                 removeHorizontalSeam(foundSeam);
             }
