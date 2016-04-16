@@ -223,7 +223,7 @@ public class SeamCarver{
     pixels to update are the pixel below and above the seam , so 2 times the
     number of elements the seam has plus 2 for the pixel left of the first pixel
     of the seam and for the pixel right of the last pixel of the seam*/
-    public void updateHorizontal(int[] seam){
+    private void updateHorizontal(int[] seam){
 
         int[] abovePixels = new int[ seam.length];
         int[] belowPixels = new int[ seam.length];
@@ -259,7 +259,15 @@ public class SeamCarver{
             }
 
             //now remove pixelEnergy from table
-            energyTable.get(row).remove(i);
+            try{
+                energyTable.get(row).remove(i);
+            }
+            catch(IndexOutOfBoundsException e){
+                System.out.println("i: " + i + " row: " + row);
+                System.out.println("W: " + width + " H: " + height);
+                System.out.println(Arrays.toString(seam));
+                System.exit(0);
+            }
             i += 1;
         }
 
@@ -285,7 +293,7 @@ public class SeamCarver{
     /*Method to update energy table when a vertical seam is removed
     pixels to update are the pixels surrounding the seam , which are the pixels left and
     right from the seam and the one above the first pixel and also the one below the last pixelEnergy*/
-    public void updateVertical(int[] seam){
+    private void updateVertical(int[] seam){
 
         int[] leftPixels = new int[ seam.length ];
         int[] rightPixels = new int[ seam.length];
@@ -295,6 +303,7 @@ public class SeamCarver{
         int bottomPixel = 0;
 
         //first top and bottom pixel
+        //width is correct dont change
         if( seam[seam.length -1 ] != seam[0]){
             topPixel = (seam[seam.length -1 ] + 1) % width;
             if(topPixel > seam[seam.length -1 ] ){
