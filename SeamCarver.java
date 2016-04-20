@@ -115,15 +115,26 @@ public class SeamCarver{
 
 
         /*Setting up what we need for scaling*/
-        BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
-        graphics = resizedImage.createGraphics();
-        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        graphics.drawImage(inputImage,0,0,width,height,null);       //0,0--->x,y coordinate,null -->ImageObserver
-        graphics.dispose();
+        // BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
+        // graphics = resizedImage.createGraphics();
+        // graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        // graphics.drawImage(inputImage,0,0,width,height,null);       //0,0--->x,y coordinate,null -->ImageObserver
+        // graphics.dispose();
 
         /*storing resizedImage into inputImage*/
-        inputImage = resizedImage;
+        //inputImage = resizedImage;
 
+        Image resizedImage = inputImage.getScaledInstance(width, height, Image.SCALE_DEFAULT);
+
+        //convert image to bufferedImage
+        // Create a buffered image with transparency
+        inputImage = new BufferedImage(resizedImage.getWidth(null), resizedImage.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+        // Draw the image on to the buffered image
+        Graphics2D bGr = inputImage.createGraphics();
+        bGr.drawImage(resizedImage, 0, 0, null);
+        bGr.dispose();
+        
         //Update image dimensions
         this.width = inputImage.getWidth();
         this.height = inputImage.getHeight();
