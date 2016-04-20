@@ -134,7 +134,7 @@ public class SeamCarver{
         Graphics2D bGr = inputImage.createGraphics();
         bGr.drawImage(resizedImage, 0, 0, null);
         bGr.dispose();
-        
+
         //Update image dimensions
         this.width = inputImage.getWidth();
         this.height = inputImage.getHeight();
@@ -410,6 +410,7 @@ public class SeamCarver{
             }
         }
 
+        statsFile.println("SeamCarve Width: " + width + " SeamCarve Height: " + height);
         /*Close stats file*/
         statsFile.close();
 
