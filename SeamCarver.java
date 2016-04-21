@@ -154,31 +154,14 @@ public class SeamCarver{
         BufferedImage newImage = new BufferedImage(width,
                                 height -1 , inputImage.getType());
 
-        WritableRaster newImageRaster = newImage.getRaster() ;
-
-        //get Data of original image
-        Raster data = inputImage.getData();
-
-        //garbage array TODO:check use of garbage array
-        float[] garbArray = new float[width * 10];
-
-        //remove horizontal seam column by column
-        for( int column = 0; column < seam.length; column ++){
-            int row = seam[column];
-
-            if(row > 0){                                //copy pixels above seam
-                newImageRaster.setPixels(column,0,1,row,
-                                        data.getPixels(column, 0 , 1 , row , garbArray));
-            }
-
-
-                if(seam[column] < height - 1){          //copy pixels under seam
-                    int heightAfter = newImage.getHeight() - row ;
-                    newImageRaster.setPixels(column , row ,  1 , heightAfter,
-                                            data.getPixels(column , row + 1, 1 , heightAfter , garbArray));
+        for (int column = 0; column < width; column++){
+            int copyPos = 0;
+            for(int row = 0; row < height; row++){
+                if(row != seam[column]){
+                    newImage.setRGB(column,copyPos, inputImage.getRGB(column,row));
+                    copyPos++;
                 }
-
-
+            }
         }
 
         inputImage = newImage;
@@ -196,30 +179,14 @@ public class SeamCarver{
         BufferedImage newImage = new BufferedImage(width - 1,
                                 height , inputImage.getType());
 
-        WritableRaster newImageRaster = newImage.getRaster() ;
-
-        //get Data of original image
-        final Raster data = inputImage.getData();
-
-        //garbage array TODO:check use of garbage array
-        float[] garbArray = new float[height * 10];
-
-        //copy one row at a time
-        for(int row = 0; row < seam.length; row ++){
-
-            int column = seam[row];
-
-            if(column > 0){                             //copy pixels from the left side of seam
-                newImageRaster.setPixels(0,row,column,1,
-                                        data.getPixels(0, row, column, 1, garbArray));
+        for( int row =0; row < height; row++){
+            int copyPos = 0;
+            for(int column =0; column < width; column++){
+                if(column != seam[row]){
+                    newImage.setRGB(copyPos, row, inputImage.getRGB(column,row));
+                    copyPos++;
+                }
             }
-
-            if(seam[row] < width - 1){                  //copy pixels from the right side of seam
-                int widthAfter = newImage.getWidth() - column;
-                newImageRaster.setPixels(column , row, widthAfter, 1,
-                                        data.getPixels(column + 1, row, widthAfter, 1, garbArray));
-            }
-
         }
 
         inputImage = newImage;
