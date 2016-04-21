@@ -345,10 +345,6 @@ public class SeamCarver{
         int scaledWidth = Math.round(height * ratio) ;
         int scaledHeight = Math.round(width / ratio) ;
 
-        /*Write the final dimensions into the statistics file*/
-        statsFile.println("SEAMCARVE DIMENSIONS:" + width + "x" + height);
-
-
         /*First check if scaling to one Dimension doesnt make the other one
         smaller than the result of seamcarve algorithm dimensions,
         then if that doesn't happen with any dimension choose the one that will
@@ -368,6 +364,9 @@ public class SeamCarver{
 
         /*Scale image*/
         scale(scaledWidth,scaledHeight);
+
+        /*Write the final dimensions into the statistics file*/
+        statsFile.println("SEAMCARVE DIMENSIONS:" + width + "x" + height);
 
         /*apply seam carving algorithm*/
         if(height == scaledHeight){//remove vertical seams
@@ -512,7 +511,7 @@ public class SeamCarver{
     //method finds vertical seam. Returns seamTable which includes column numbers of image.
     public int[] findHorizontalSeam(){
 
-        double bottom,bottomLeft,bottomRight;           /*energies of pixels next to the one we are examining*/
+        double right,topRight,bottomRight;           /*energies of pixels next to the one we are examining*/
         int[] favoredSeam = null;
         double favoredSeamEnergy = -1;
         int[] checkSeam ;                               /*current Seam that is examined*/
@@ -531,20 +530,20 @@ public class SeamCarver{
             for ( int j = 0; j < width - 1 ; j++ ){                 /*iterating over COLUMNS*/
 
                 /*Getting energies of pixels*/
-                bottom = energyTable.get(j+1).get(row);
+                right = energyTable.get(j+1).get(row);
                 bottomRight = energyTable.get( j+1 ).get( (row + 1)  % height  );
-                bottomLeft = energyTable.get( ( j+1 )).get( ( row -1 + height ) % height ) ;
+                topRight = energyTable.get( ( j+1 )).get( ( row -1 + height ) % height ) ;
 
-                minEnergy = Math.min( Math.min( bottom , bottomLeft ) , bottomRight);
+                minEnergy = Math.min( Math.min( right, topRight ) , bottomRight);
 
 
-                /*Always prefer bottom pixel if all have the sam eenergy*/
-                if(minEnergy == bottom){
+                /*Always prefer right pixel if all have the sam eenergy*/
+                if(minEnergy == right){
                 }
                 else if( minEnergy == bottomRight ){
                     row = (row + 1) % height ;
                 }
-                else if (minEnergy == bottomLeft ){
+                else if (minEnergy == topRight ){
                     row = (row - 1 + height) % height ;
                 }
 
@@ -642,9 +641,9 @@ public class SeamCarver{
                 continue;
             }
 
-            /*Check if user has given a greater width value than that of the image*/
-            if(newWidth > seam.getWidth()){
-                System.out.println("New width can't be greater than current width of image");
+            /*Check if user has given a greater width value than that of the image or negative*/
+            if(newWidth > seam.getWidth() || newWidth < 0){
+                System.out.println("Accepted values are 1 - " + seam.getWidth());
                 continue;
             }
 
@@ -665,9 +664,9 @@ public class SeamCarver{
                 continue;
             }
 
-            /*Check if user has given a greater height value than that of the image*/
-            if(newHeight > seam.getHeight()){
-                System.out.println("New height can't be greater that current height of image");
+            /*Check if user has given a greater height value than that of the image or negative*/
+            if(newHeight > seam.getHeight() || newHeight < 0){
+                System.out.println("Accepted values are 1 - " + seam.getHeight());
                 continue;
             }
 
