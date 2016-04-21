@@ -16,6 +16,7 @@ public class SeamCarver{
     private int width;                          //image width
     private int height;                         //image height
     private PrintWriter statsFile = null ;      //file to write the seams and image dimensions
+    private String fileName = null;
 
     /*primary Constructor, which will also be used be the other 2
     It also throws an IOException because it maybe was called from one
@@ -26,6 +27,8 @@ public class SeamCarver{
         inputImage = image;
         width = inputImage.getWidth();
         height = inputImage.getHeight();
+
+        System.out.println("The image's dimensions are:" + width + "x" + height);
 
     }
 
@@ -43,6 +46,8 @@ public class SeamCarver{
         if(position > 0){
             path = path.substring(0,position);
         }
+
+        fileName = path;
 
         /*create file for statistics*/
         statsFile = new PrintWriter( path + ".dbg" , "UTF-8" );
@@ -63,6 +68,8 @@ public class SeamCarver{
         int slashPosition = path.lastIndexOf("/");
 
         path = path.substring( slashPosition + 1, dotPosition - 1 );
+
+        fileName = path;
 
         /*Create file for statistics*/
         statsFile = new PrintWriter( path + ".dbg" , "UTF-8" );
@@ -383,6 +390,12 @@ public class SeamCarver{
         /*Close stats file*/
         statsFile.close();
 
+        /*Rename file*/
+        File oldName = new File(fileName + ".dbg");
+        File newName = new File(fileName + "_" + width + "x" + height + ".dbg");
+        oldName.renameTo(newName);
+
+
     }
 
     /*Method to store the image into a file*/
@@ -549,7 +562,7 @@ public class SeamCarver{
 
         /*Write to statistics file*/
         for(int position: favoredSeam){
-            statsFile.format("%d ");
+            statsFile.format("%d ", position);
         }
 
         /*Newline character*/
@@ -557,6 +570,17 @@ public class SeamCarver{
 
         return(favoredSeam);
     }
+
+    /*return height of image*/
+    public int getHeight(){
+        return height;
+    }
+
+    /*return width of image*/
+    public int getWidth(){
+        return width;
+    }
+
 
     /*Main method*/
     public static void main(String[] args){
@@ -604,27 +628,51 @@ public class SeamCarver{
             }
         }
 
-        /*Ask user for desired dimensions*/
+        /*Ask user for desired width*/
         while(true){
 
             try{
                 System.out.print("Please enter desired width:");
                 newWidth = input.nextInt();
-                input.nextLine();                   //consume \n character
+                input.nextLine();                   /*consume \n character*/
             }
             catch(InputMismatchException e){
                 System.out.println("This is not a valid integer");
+                input.nextLine();                   /*clear buffer*/
+                continue;
             }
 
+            /*Check if user has given a greater width value than that of the image*/
+            if(newWidth > seam.getWidth()){
+                System.out.println("New width can't be greater than current width of image");
+                continue;
+            }
+
+            break;
+
+        }
+
+        /*Ask user for desired height*/
+        while(true){
             try{
                 System.out.print("Please enter desired height:");
                 newHeight = input.nextInt();
-                input.nextLine();                   //consume \n character
-                break;
+                input.nextLine();                   /*consume \n character*/
             }
             catch(InputMismatchException e){
                 System.out.println("This is not a valid integer");
+                input.nextLine();                   /*clear buffer*/
+                continue;
             }
+
+            /*Check if user has given a greater height value than that of the image*/
+            if(newHeight > seam.getHeight()){
+                System.out.println("New height can't be greater that current height of image");
+                continue;
+            }
+
+            break;
+
         }
 
         /*If file with the same name as detinationFile exists print an error message*/
