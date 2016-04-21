@@ -1,4 +1,18 @@
-/*Class that implements the Seam Carving algorithm*/
+/*George Karaolanis 1841
+  Pantelis Dimitroulis 1770
+  University of Thessaly
+  summer semester 2016
+  Object oriented programming assignment*/
+
+/*Class that implements the Seam Carving algorithm.
+NOTE:instead of calculating the energy for each pixel
+on each step, only the affected pixel's energy is
+calculated again. To achieve this several lists are created
+each representing either the energy for each pixel in a
+row or in a column, depending on the type of seams we removed.
+These lists are stored in a bigger list, in a way that they can
+be accessed easily by using the get(index) method these Arraylists
+provide*/
 
 import javax.imageio.ImageIO;
 import java.awt.image.*;
@@ -13,10 +27,10 @@ public class SeamCarver{
     /*the image to be processed*/
     private BufferedImage inputImage;
     private ArrayList< ArrayList<Double> > energyTable = new ArrayList< ArrayList<Double> >();
-    private int width;                          //image width
-    private int height;                         //image height
-    private PrintWriter statsFile = null ;      //file to write the seams and image dimensions
-    private String fileName = null;
+    private int width;                          /*image width*/
+    private int height;                         /*image height*/
+    private PrintWriter statsFile = null ;      /*file to write the seams and image dimensions*/
+    private String fileName = null;             /*name of destinationFile for our image*/
 
     /*primary Constructor, which will also be used be the other 2
     It also throws an IOException because it maybe was called from one
@@ -31,6 +45,7 @@ public class SeamCarver{
         System.out.println("The image's dimensions are:" + width + "x" + height);
 
     }
+
 
     /*Constructor in case the user wants
     to open an existing image from a directory*/
@@ -56,6 +71,7 @@ public class SeamCarver{
 
     }
 
+
     /*Constructor in case the user wants to open an image from an url*/
     public SeamCarver(URL link) throws IOException{
 
@@ -76,10 +92,7 @@ public class SeamCarver{
 
         statsFile.println("INIT DIMENSIONS:" + width + "x" + height);
 
-
-
     }
-
 
 
     /*Method for calculating the energy of a pixel*/
@@ -136,10 +149,11 @@ public class SeamCarver{
 
     }
 
+
     /*Method for removing horizontal seam from image*/
     public void removeHorizontalSeam(int[] seam){
 
-        //create the new image
+        /*create the new image*/
         BufferedImage newImage = new BufferedImage(width,
                                 height -1 , inputImage.getType());
 
@@ -163,6 +177,7 @@ public class SeamCarver{
         width = inputImage.getWidth();
 
     }
+
 
     /*Method for removing vertical seam from picture*/
     public void removeVerticalSeam(int[] seam){
@@ -190,6 +205,7 @@ public class SeamCarver{
         height = inputImage.getHeight();
 
     }
+
 
     /*Method to update the energy list when a horizontal seam is removed.
     Pixels to update are the pixels below and above the seam , so 2 times the
@@ -225,7 +241,7 @@ public class SeamCarver{
 
         /*pixels above and below seam*/
         for(int row : seam){
-            abovePixels[i] = (row - 1 + height) % height;       //top pixel
+            abovePixels[i] = (row - 1 + height) % height;
             belowPixels[i] = (row +1) % height;
 
             /*Adjust position*/
@@ -237,12 +253,12 @@ public class SeamCarver{
                 belowPixels[i] -= 1;
             }
 
-            //now remove pixelEnergy from table
+            /*now remove pixelEnergy from table*/
             energyTable.get(i).remove(row);
             i += 1;
         }
 
-        //now update the energies of surrounding pixels of seam
+        /*now update the energies of surrounding pixels of seam*/
         for(i = 0; i < width; i++){
             newEnergy = energy(abovePixels[i],i);
             energyTable.get(i).set(abovePixels[i],newEnergy);
@@ -251,15 +267,16 @@ public class SeamCarver{
         }
 
         if( seam[seam.length -1] != seam[0]){
-            //far rightPixel
+            /*far rightPixel*/
             newEnergy = energy(rightPixel,0);
             energyTable.get(0).set(rightPixel,newEnergy);
-            //far left pixel
+            /*far left pixel*/
             newEnergy = energy(leftPixel,width-1);
             energyTable.get(width-1).set(leftPixel,newEnergy);
         }
 
     }
+
 
     /*Method to update energy list when a vertical seam is removed.
     Pixels to update are the pixels surrounding the seam , which are
@@ -271,6 +288,7 @@ public class SeamCarver{
     have their energy changed*/
     private void updateVertical(int[] seam){
 
+        /*Arrays to store the position of pixels whose energy must be updated*/
         int[] leftPixels = new int[ seam.length ];
         int[] rightPixels = new int[ seam.length];
         double newEnergy;
@@ -278,8 +296,7 @@ public class SeamCarver{
         int topPixel = 0;
         int bottomPixel = 0;
 
-        //first top and bottom pixel
-        //width is correct dont change
+        /*first top and bottom pixel*/
         if( seam[seam.length -1 ] != seam[0]){
 
             topPixel = seam[seam.length - 1];
@@ -293,10 +310,10 @@ public class SeamCarver{
             }
         }
 
-        //pixels left and right from seam
+        /*pixels left and right from seam*/
         for(int column : seam){
-            leftPixels[i] = (column - 1 + width) % width;       //left pixel
-            rightPixels[i] = (column+1) % width ;               //right pixel
+            leftPixels[i] = (column - 1 + width) % width;
+            rightPixels[i] = (column+1) % width ;
 
             /*Adjust position*/
             if(leftPixels[i] > column){
@@ -307,12 +324,12 @@ public class SeamCarver{
                 rightPixels[i] -= 1;
             }
 
-            //now remove pixelEnergy from table
+            /*now remove pixelEnergy from table*/
             energyTable.get(i).remove(column);
             i += 1;
         }
 
-        //now update the energies of surrounding pixels of seam
+        /*now update the energies of surrounding pixels of seam*/
         for(i = 0; i < height ; i++){
             newEnergy = energy(i,leftPixels[i]);
             energyTable.get(i).set(leftPixels[i],newEnergy);
@@ -321,15 +338,16 @@ public class SeamCarver{
         }
 
         if( seam[seam.length -1 ] != seam[0]){
-            //far bottom pixel
+            /*far bottom pixel*/
             newEnergy = energy(0,bottomPixel);
             energyTable.get(0).set(bottomPixel,newEnergy);
-            //far top pixel
+            /*far top pixel*/
             newEnergy = energy(height-1,topPixel);
             energyTable.get(height-1).set(topPixel,newEnergy);
         }
 
     }
+
 
     /*Method for applying Seam Carve algorithm onto picture
     width, height = dimensions of the image we want to get after applying the seamCarve algorithm*/
@@ -369,7 +387,7 @@ public class SeamCarver{
         statsFile.println("SEAMCARVE DIMENSIONS:" + width + "x" + height);
 
         /*apply seam carving algorithm*/
-        if(height == scaledHeight){//remove vertical seams
+        if(height == scaledHeight){                     /*remove vertical seams*/
             createEnergyTable("vertical");
             while(this.width > width ){
                 foundSeam = findVerticalSeam();
@@ -379,7 +397,7 @@ public class SeamCarver{
         }
         else{
             createEnergyTable("horizontal");
-            while(this.height > height){//remove horizontal seams
+            while(this.height > height){                /*remove horizontal seams*/
                 foundSeam = findHorizontalSeam();
                 updateHorizontal(foundSeam);
                 removeHorizontalSeam(foundSeam);
@@ -397,6 +415,7 @@ public class SeamCarver{
 
     }
 
+
     /*Method to store the image into a file*/
     public void storeImage(File outputFile){
 
@@ -409,6 +428,7 @@ public class SeamCarver{
         }
 
     }
+
 
     /*This method creates or updates energy list by using energy() method.
     If horizontal seams are to be removed, each list represents one column
@@ -508,7 +528,8 @@ public class SeamCarver{
         return(favoredSeam);
     }
 
-    //method finds vertical seam. Returns seamTable which includes column numbers of image.
+
+    /*Method that finds the horizontal seam to remove */
     public int[] findHorizontalSeam(){
 
         double right,topRight,bottomRight;           /*energies of pixels next to the one we are examining*/
