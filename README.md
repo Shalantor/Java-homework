@@ -17,10 +17,8 @@ Suppose that the image is a two dimensional array of H rows and W columns (WxH),
 
                                 Ε(i,j) = Eχ(i,j) + Εy(i,j),
 
-Ex(i,j) = Rx(i,j)^2 + Gx(i,j)^2 + Bx(i,j)^2
 Ex(i,j) = [R(i,j+1) - R(i,j-1)]^2 + [G(i,j+1) - G(i,j-1)]^2 + [B(i,j+1) - B(i,j-1)]^2
 
-Ey(i,j) = Ry(i,j)^2 + Gy(i,j)^2 + By(i,j)^2
 Ey(i,j) = [R(i+1,j) - R(i-1,j)]^2 + [G(i+1,j) - G(i-1,j)]^2 + [B(i+1,j) - B(i-1,j)]^2
 
 Where i stands for row, j for column , Ex for the energy on the X-axis , Ey for the energy on the Y-axis and E is the sum of those two. R,G and B represent the RGB values of a pixel for the colors RED , GREEN and BLUE.
